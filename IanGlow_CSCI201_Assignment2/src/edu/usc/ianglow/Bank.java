@@ -1,3 +1,4 @@
+//Ian Glow HW2 for CSCI 270
 package edu.usc.ianglow;
 
 import java.io.FileInputStream;
@@ -11,12 +12,121 @@ public class Bank{
 	ArrayList<User> users;
 	User user;
 	Scanner sc;
+	boolean loop;
 	
-	@SuppressWarnings("unchecked")
 	public Bank()
 	{
 		sc = new Scanner(System.in);
+		loop = false;
+		loadUsers();
 		
+		while(true)
+		{
+			int in = 1;
+			if(!loop)
+				 in = getInt("\nWelcome to the bank.\n1) Existing Account Holder\n2) Open a New Account\nWhat would you like to do? ",1,2);
+
+			loop = false;
+			String username;
+			
+			if(in == 2)
+			{
+				while(true){
+					System.out.print("Username: ");
+					username = sc.next();
+					if(usernameExists(username))
+					{
+						System.out.println("\nI’m sorry, but the username \"" + username + "\" is already associated\nwith an account. Please try again (or enter ‘q’ to return to\nthe main menu).");
+					}
+					else
+					{
+						if(!username.equalsIgnoreCase("q"))
+							System.out.println("Great, that username is not in use!");
+						break;
+					}
+				};
+				if(username.equalsIgnoreCase("q")) continue;
+				
+				System.out.print("Password:");
+				String password = sc.next();
+				
+				double checking = getDouble("How much would you like to deposit in checking? ");
+				double savings = getDouble("How much would you like to deposit in savings? ");
+				System.out.println();
+				users.add(new User(username, password, savings, checking));
+			}
+			else if(in == 1)
+			{
+				System.out.print("Username: ");
+				username = sc.next();
+				if(username.equalsIgnoreCase("q"))
+					continue;
+				
+				System.out.print("Password: ");
+				String password = sc.next();
+				
+				user = login(users,username,password);
+				if(user != null) 
+				{
+					System.out.println();
+					sc.nextLine();
+					break;	
+				}
+				System.out.println("\nI’m sorry, but that username and password does not match any\nat our bank."
+						+ "Please try again (or enter ‘q’ to return to the\nmain menu).");
+				sc.nextLine();
+				loop = true;
+			}
+		}
+		
+		System.out.print("\nWelcome to your accounts, " + user.username);
+		
+		while(true)
+		{
+			System.out.print("\n1) View Account Information\n2) Make a Deposit\n3) Make a Withdrawal" +
+						"\n4) Determine Balance in x Years\n5) Logout\nWhat would you like to do? ");
+			int in = getInt("", 1, 5);
+			if(in == 1){
+					System.out.println("You have a " + user.checking.getAccountType() + " account with a balance of " + String.format("$%,.2f", user.checking.getBalance()));
+					System.out.println("You have a " + user.savings.getAccountType() + " account with a balance of " + String.format("$%,.2f", user.savings.getBalance()));
+			}
+			else if(in == 2){
+				depositMoney();
+			}
+			else if(in == 3){
+				withdrawMoney();
+			}
+			else if(in == 4)
+			{
+				showIntrest();
+			}
+			else if(in == 5){
+				break;
+			}
+		}
+		
+		System.out.println("Thank you for coming into the bank!");
+		sc.nextLine();
+		
+		saveUsers();
+	}
+
+	private void saveUsers() {
+		try {
+			for(User i : users)
+				i.preSerialize();
+			
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Users.txt"));
+			oos.writeObject(users);
+			oos.close();
+		} catch (Exception e) {
+			System.out.println("Failed to save users");
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadUsers() {
 		try
 		{
 			ObjectInputStream oos = new ObjectInputStream( new FileInputStream("Users.txt"));
@@ -26,166 +136,96 @@ public class Bank{
 		}
 		catch(Exception e)
 		{	
-			e.printStackTrace();
-			System.out.println("No File found, creating arraylist");
 			users = new ArrayList<User>();
 		}
+	}
+
+	private void showIntrest() {
+		int in;
+		in = getInt("In how many years?", 0, Integer.MAX_VALUE);
 		
-		while(true)
+		//This is done to calculate the number of spaces between things
+		user.savings.getBalanceAfterNumYears(in, user);
+		int yearS = user.savings.yearSize;
+		int amountS = user.savings.balnceSize;
+		int	intrestS = user.savings.intrestSize;	
+		
+		System.out.println(yearS + " " + amountS + " " + intrestS);
+		
+		System.out.println(addTrailingSpaces("Year", yearS) + addTrailingSpaces("Amount", amountS)  + "Intrest");
+		System.out.println(addTrailingSpaces("----", yearS) + addTrailingSpaces("------", amountS)  + "-------");
+		
+		double current = user.savings.getBalance();
+		for(int i = 0; i <= in; i++)
 		{
-			System.out.print("Welcome to the bank.\n1) Existing Account Holder\n2) Open a New Account\nWhat would you like to do?");
-			int in = getInt("",1,2);
-			String username;
-			if(in == 2)
-			{
-				do{
-					System.out.println("Username:");
-					username = sc.nextLine();
-					if(usernameExists(username))
-					{
-						System.out.println("I’m sorry, but the username \"" + username + "\" is already associated\nwith an account. Please try again (or enter ‘q’ to return to\nthe main menu)");
-						username = sc.nextLine();
-					}
-					else
-					{
-						break;
-					}
-				}while(!username.equalsIgnoreCase("q"));
-				if(username.equalsIgnoreCase("q")) continue;
-				
-				System.out.println("Password:");
-				String password = sc.next();
-				
-				double checking = getDouble("How much would you like to deposit in checking?");
-				double savings = getDouble("How much would you like to deposit in savings?");
-				
-//				System.out.println("Username: " + username + "\nPassword: " + password + "\nMoney: " + (checking + savings));
-				users.add(new User(username, password, savings, checking));
-			}
-			else if(in == 1)
-			{
-				//login
-				System.out.println("Username:");
-				username = sc.next();
-				System.out.println("Password:");
-				String password = sc.next();
-				System.out.println("Username: " + username + "\nPassword: " + password);
-				user = login(users,username,password);
-				if(user != null) 
-				{
-					System.out.println("Logged in!");
-					sc.nextLine();;
-					break;	
-				}
-				System.out.println("\n*Username or password incorect*\n");
-				sc.nextLine();;
-			}
+			double next = user.savings.getBalanceAfterNumYears(i + 1, user);
+			double intrest = next - current;
+			
+			if(i == in)
+				System.out.println(addTrailingSpaces("" + i, yearS) + addTrailingSpaces(String.format("$%,.2f%n", current), amountS)); 
+			else
+				System.out.println(addTrailingSpaces("" + i, yearS) 
+						+ addTrailingSpaces(String.format("$%,.2f", current), amountS)
+						+ addTrailingSpaces(String.format("$%,.2f", intrest), intrestS)); 
+			
+			current = next;
 		}
-		
-		while(true)
+	}
+
+	private void withdrawMoney() {
+		int in;
+		in = getInt("Here are the accounts you have:" + 
+				"\n1) Checking\n2) " + user.savings.getAccountType() +
+				"\nFrom which account would you like to withdraw? ", 1, 2);
+		if(in == 1)
 		{
-			System.out.print("Welcome to your accounts, " + user.username + "\n1) View Account Information\n2) Make a Deposit\n3) Make a Withdrawal" +
-						"\n4) Determine Balance in x Years\n5) Logout\nWhat would you like to do? ");
-			int in = getInt("", 1, 5);
-			if(in == 1){
-					System.out.println("You have a checking account with a balance of " + user.checking.getBalance());
-					System.out.println("You have a " + user.savings.getAccountType() + " account with a balance of " + user.savings.getBalance());
-			}
-			else if(in == 2){
-				System.out.println("Here are the accounts you have:" + 
-						"\n1) Checking\n2) " + user.savings.getAccountType());
-				in = getInt("", 1, 2);
-				if(in == 1)
-				{
-					double money = getDouble("How much do you want to put into checking?");
-					user.checking.deposit(money);
-					System.out.println("" + money + " deposited");
-					sc.nextLine();;
-				}
-				else if(in == 2)
-				{
-					double money = getDouble("How much do you want to put into savings?");
-					user.savings.deposit(money);
-					user.updateAccountType();
-					System.out.println("" + money + " deposited");
-					sc.nextLine();;
-				}
-			}
-			else if(in == 3){
-				System.out.println("Here are the accounts you have:" + 
-						"\n1) Checking\n2) " + user.savings.getAccountType());
-				in = getInt("", 1, 2);
-				if(in == 1)
-				{
-					double money = getDouble("How much do you want to withdraw from checking?");
-					if(!user.checking.withdraw(money))
-						System.out.println("You do not have that amount to withdraw");
-					else
-					{
-						user.updateAccountType();
-						System.out.println("" + money + " withdraw");
-					}
-					sc.nextLine();;
-				}
-				else if(in == 2)
-				{
-					double money = getDouble("How much do you want to withdraw from savings?");
-					if(!user.savings.withdraw(money))
-						System.out.println("You do not have that amount to withdraw");
-					{
-						user.updateAccountType();
-						System.out.println("" + money + " withdraw");
-					}
-					sc.nextLine();;
-				}
-			}
-			else if(in == 4)
+			double money = getDouble("How much do you want to withdraw from checking? ");
+			if(!user.checking.withdraw(money))
+				System.out.println("You do not have " + money +" in your checking account.");
+			else
 			{
-				System.out.println("In how many years?");
-				in = getInt("", 0, Integer.MAX_VALUE);
-				System.out.println("Year    Amount    Intrest");
-				System.out.println("----    ------    -------");
-				double current = user.savings.getBalance();
-				for(int i = 0; i <= in; i++)
-				{
-					double next = user.savings.getBalanceAfterNumYears(i + 1);
-					double intrest = next - current;
-					if(i == in)
-						System.out.printf(i + "    $%,.2f%n", current); 
-					else
-						System.out.printf(i + "    $%,.2f    $%,.2f%n", current, intrest); 
-					
-					current = next;
-				}
+				user.updateAccountType();
+				System.out.println("" + String.format("$%,.2f", money) + " withdraw from your " + user.checking.getAccountType() + " account");
 			}
-			else if(in == 5){
-				break;
-			}
+			sc.nextLine();
 		}
-		
-		System.out.println("Thank you for coming into the bank!");
-		sc.nextLine();;
-		
-		try {
-			for(User i : users){
-				i.preSerialize();
-//				System.out.println(i.toString());
+		else if(in == 2)
+		{
+			double money = getDouble("How much do you want to withdraw from savings?");
+			if(!user.savings.withdraw(money))
+				System.out.println("You do not have " + money +" in your " + user.savings.getAccountType() + " account.");
+			{
+				user.updateAccountType();
+				System.out.println("" + String.format("$%,.2f", money) + " withdraw from your " + user.checking.getAccountType() + " account");
 			}
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Users.txt"));
-			oos.writeObject(users);
-			oos.close();
-		} catch (Exception e) {
-			System.out.println("Failed to save users");
-			e.printStackTrace();
+			sc.nextLine();
+		}
+	}
+
+	private void depositMoney() {
+		int in;
+		in = getInt("Here are the accounts you have:" + 
+				"\n1) Checking\n2) " + user.savings.getAccountType() 
+				+ "\nInto which account would you like to make a deposit? ", 1, 2);
+		if(in == 1)
+		{
+			double money = getDouble("How much do you want to put into checking?");
+			user.checking.deposit(money);
+			user.updateAccountType();
+			System.out.println("" + String.format("$%,.2f", money) + " deposited into your " + user.checking.getAccountType() + " account");
+			sc.nextLine();
+		}
+		else if(in == 2)
+		{
+			double money = getDouble("How much do you want to put into savings?");
+			user.savings.deposit(money);
+			user.updateAccountType();
+			System.out.println("" + String.format("$%,.2f", money) + " deposited into your " + user.savings.getAccountType() + " account");
+			sc.nextLine();
 		}
 	}
 	
-	public static void main(String[] args)
-	{
-		new Bank();
-	}
-	
-	boolean usernameExists(String username)
+	private boolean usernameExists(String username)
 	{
 		for(User i : users)
 		{
@@ -196,7 +236,7 @@ public class Bank{
 	
 	private double getDouble(String prompt)
 	{
-		System.out.println(prompt);
+		System.out.print(prompt);
 		double temp;
 		while(true)
 		{
@@ -224,7 +264,7 @@ public class Bank{
 	
 	private int getInt(String prompt, int min, int max)
 	{
-		System.out.println(prompt);
+		System.out.print(prompt);
 		int temp;
 		while(true)
 		{
@@ -243,6 +283,7 @@ public class Bank{
 				}
 				
 				sc.nextLine();
+				System.out.println();
 				break;
 			}
 			catch(Exception c)
@@ -255,7 +296,7 @@ public class Bank{
 		return temp;
 	}
 
-	static User login(ArrayList<User> users, String username, String password)
+	private static User login(ArrayList<User> users, String username, String password)
 	{
 		for(User i : users)
 		{
@@ -264,4 +305,29 @@ public class Bank{
 		return null;
 	}
 	
+	private static String getSpaces(int num, char c)
+	{
+		StringBuilder temp = new StringBuilder();
+		for(int i = 0; i < num + 2; i++) 
+		{
+			if(i > num - 1)
+				temp.append(' ');
+			else
+				temp.append(c);
+		}
+		return temp.toString();
+	}
+
+	private static String addTrailingSpaces(String a, int num)
+	{
+		if(num < a.length())
+			return a + getSpaces(2, ' ');
+		return a + getSpaces(num - a.length() + 2, ' ');
+	}
+	
+	public static void main(String[] args)
+	{
+		new Bank();
+	}
+
 }

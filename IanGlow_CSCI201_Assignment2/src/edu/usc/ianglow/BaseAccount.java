@@ -16,7 +16,8 @@ public abstract class BaseAccount {
 	
 	// returns the balance after numYears has passed
 	// if the account has interest, this method will account for it
-	protected abstract double getBalanceAfterNumYears(int numYears);
+	//MUST pass in user or you cannot calculate
+	protected abstract double getBalanceAfterNumYears(int numYears, User user);
 	
 	// returns a string representing the type of account
 	// such as “Checking”, “Deluxe Savings”, etc.

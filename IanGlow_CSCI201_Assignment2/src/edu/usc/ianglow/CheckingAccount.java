@@ -8,7 +8,7 @@ public class CheckingAccount extends BaseAccount{
 	}
 
 	@Override
-	protected double getBalanceAfterNumYears(int numYears) {
+	protected double getBalanceAfterNumYears(int numYears, User user) {
 		return getBalance();
 	}
 

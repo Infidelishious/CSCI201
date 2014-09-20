@@ -49,7 +49,8 @@ public class User implements Serializable{
 	}
 	
 	public String toString(){
-		return "Username: " + username + "\nPassword: " + password + "\nMoney: " + (checkingBalance + savingBalance);
+		return "Username: " + username + "\nPassword: " + password 
+				+ "\nMoney: " + (checking.getBalance() + savings.getBalance());
 	}
 
 }
