@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Bank{
+	private static final int WITHDRAW = 0, DEPOSIT = 1;
+	
 	ArrayList<User> users;
 	User user;
 	Scanner sc;
@@ -24,7 +26,7 @@ public class Bank{
 		{
 			int in = 1;
 			if(!loop)
-				 in = getInt("\nWelcome to the bank.\n1) Existing Account Holder\n2) Open a New Account\nWhat would you like to do? ",1,2);
+				 in = getInt("\nWelcome to the bank.\n1) Existing Account Holder\n2) Open a New Account\nWhat would you like to do? ",1,2,true);
 
 			loop = false;
 			String username;
@@ -36,7 +38,7 @@ public class Bank{
 					username = sc.next();
 					if(usernameExists(username))
 					{
-						System.out.println("\nI’m sorry, but the username \"" + username + "\" is already associated\nwith an account. Please try again (or enter ‘q’ to return to\nthe main menu).");
+						System.out.println("I’m sorry, but the username \"" + username + "\" is already associated\nwith an account. Please try again (or enter ‘q’ to return to\nthe main menu).");
 					}
 					else
 					{
@@ -47,12 +49,12 @@ public class Bank{
 				};
 				if(username.equalsIgnoreCase("q")) continue;
 				
-				System.out.print("Password:");
+				System.out.print("Password: ");
 				String password = sc.next();
 				
-				double checking = getDouble("How much would you like to deposit in checking? ");
-				double savings = getDouble("How much would you like to deposit in savings? ");
-				System.out.println();
+				double checking = getDouble("How much would you like to deposit in checking? ", DEPOSIT);
+				double savings = getDouble("How much would you like to deposit in savings? ", DEPOSIT);
+				
 				users.add(new User(username, password, savings, checking));
 			}
 			else if(in == 1)
@@ -68,11 +70,10 @@ public class Bank{
 				user = login(users,username,password);
 				if(user != null) 
 				{
-					System.out.println();
 					sc.nextLine();
 					break;	
 				}
-				System.out.println("\nI’m sorry, but that username and password does not match any\nat our bank."
+				System.out.println("\nI’m sorry, but that username and password does not match any\nat our bank. "
 						+ "Please try again (or enter ‘q’ to return to the\nmain menu).");
 				sc.nextLine();
 				loop = true;
@@ -85,7 +86,7 @@ public class Bank{
 		{
 			System.out.print("\n1) View Account Information\n2) Make a Deposit\n3) Make a Withdrawal" +
 						"\n4) Determine Balance in x Years\n5) Logout\nWhat would you like to do? ");
-			int in = getInt("", 1, 5);
+			int in = getInt("", 1, 5, true);
 			if(in == 1){
 					System.out.println("You have a " + user.checking.getAccountType() + " account with a balance of " + String.format("$%,.2f", user.checking.getBalance()));
 					System.out.println("You have a " + user.savings.getAccountType() + " account with a balance of " + String.format("$%,.2f", user.savings.getBalance()));
@@ -105,10 +106,8 @@ public class Bank{
 			}
 		}
 		
-		System.out.println("Thank you for coming into the bank!");
-		sc.nextLine();
-		
 		saveUsers();
+		System.out.println("Thank you for coming into the bank!");
 	}
 
 	private void saveUsers() {
@@ -142,7 +141,7 @@ public class Bank{
 
 	private void showIntrest() {
 		int in;
-		in = getInt("In how many years?", 0, Integer.MAX_VALUE);
+		in = getInt("In how many years?", 0, Integer.MAX_VALUE, false);
 		
 		//This is done to calculate the number of spaces between things
 		user.savings.getBalanceAfterNumYears(in, user);
@@ -150,7 +149,7 @@ public class Bank{
 		int amountS = user.savings.balnceSize;
 		int	intrestS = user.savings.intrestSize;	
 		
-		System.out.println(yearS + " " + amountS + " " + intrestS);
+		System.out.println("Your " + user.savings.getAccountType() + " account will have the following:");
 		
 		System.out.println(addTrailingSpaces("Year", yearS) + addTrailingSpaces("Amount", amountS)  + "Intrest");
 		System.out.println(addTrailingSpaces("----", yearS) + addTrailingSpaces("------", amountS)  + "-------");
@@ -176,29 +175,28 @@ public class Bank{
 		int in;
 		in = getInt("Here are the accounts you have:" + 
 				"\n1) Checking\n2) " + user.savings.getAccountType() +
-				"\nFrom which account would you like to withdraw? ", 1, 2);
+				"\nFrom which account would you like to withdraw? ", 1, 2, false);
 		if(in == 1)
 		{
-			double money = getDouble("How much do you want to withdraw from checking? ");
-			if(!user.checking.withdraw(money))
-				System.out.println("You do not have " + money +" in your checking account.");
-			else
+			double money = getDouble("How much to withdraw? ", WITHDRAW);
+			while(!user.checking.withdraw(money))
 			{
-				user.updateAccountType();
-				System.out.println("" + String.format("$%,.2f", money) + " withdraw from your " + user.checking.getAccountType() + " account");
+				System.out.println("You do not have " + String.format("$%,.2f", money) + " in your checking account.");
+				money = getDouble("How much to withdraw? ", WITHDRAW);
 			}
-			sc.nextLine();
+			
+			user.updateAccountType();
+			System.out.println("" + String.format("$%,.2f", money) + " withdraw from your " + user.checking.getAccountType() + " account");
 		}
 		else if(in == 2)
 		{
-			double money = getDouble("How much do you want to withdraw from savings?");
+			double money = getDouble("How much to withdraw? ", WITHDRAW);
 			if(!user.savings.withdraw(money))
-				System.out.println("You do not have " + money +" in your " + user.savings.getAccountType() + " account.");
+				System.out.println("You do not have " + String.format("$%,.2f", money) +" in your " + user.savings.getAccountType() + " account.");
 			{
 				user.updateAccountType();
 				System.out.println("" + String.format("$%,.2f", money) + " withdraw from your " + user.checking.getAccountType() + " account");
 			}
-			sc.nextLine();
 		}
 	}
 
@@ -206,22 +204,20 @@ public class Bank{
 		int in;
 		in = getInt("Here are the accounts you have:" + 
 				"\n1) Checking\n2) " + user.savings.getAccountType() 
-				+ "\nInto which account would you like to make a deposit? ", 1, 2);
+				+ "\nInto which account would you like to make a deposit? ", 1, 2, false);
 		if(in == 1)
 		{
-			double money = getDouble("How much do you want to put into checking?");
+			double money = getDouble("How much do you want to put into your checking? ", DEPOSIT);
 			user.checking.deposit(money);
 			user.updateAccountType();
 			System.out.println("" + String.format("$%,.2f", money) + " deposited into your " + user.checking.getAccountType() + " account");
-			sc.nextLine();
 		}
 		else if(in == 2)
 		{
-			double money = getDouble("How much do you want to put into savings?");
+			double money = getDouble("How much do you want to put into your " + user.savings.getAccountType() + "? ", DEPOSIT);
 			user.savings.deposit(money);
 			user.updateAccountType();
 			System.out.println("" + String.format("$%,.2f", money) + " deposited into your " + user.savings.getAccountType() + " account");
-			sc.nextLine();
 		}
 	}
 	
@@ -234,18 +230,22 @@ public class Bank{
 		return false;
 	}
 	
-	private double getDouble(String prompt)
+	private double getDouble(String prompt, int type)
 	{
-		System.out.print(prompt);
 		double temp;
 		while(true)
 		{
 			try
 			{
+				System.out.print(prompt);
 				temp = sc.nextDouble();
 				if(temp <= 0)
 				{
-					System.out.println("Number must be positive. Please try again");
+					if(type == DEPOSIT)
+						System.out.println("You are not allowed to deposit a negative amount.");
+					else if (type == WITHDRAW)
+						System.out.println("You are not allowed to withdraw a negative amount.");
+					
 					continue;
 				}
 				
@@ -254,15 +254,15 @@ public class Bank{
 			}
 			catch(Exception c)
 			{
-				sc.nextLine();
-				System.out.println("Error, not a number. Please try again");
+				String failed = sc.nextLine();
+				System.out.println("\"" + failed + "\" is not a valid amount.");
 			}
 		}
 
 		return temp;
 	}
 	
-	private int getInt(String prompt, int min, int max)
+	private int getInt(String prompt, int min, int max, boolean endline)
 	{
 		System.out.print(prompt);
 		int temp;
@@ -283,7 +283,9 @@ public class Bank{
 				}
 				
 				sc.nextLine();
-				System.out.println();
+				
+				if(endline)
+					System.out.println();
 				break;
 			}
 			catch(Exception c)

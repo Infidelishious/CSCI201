@@ -9,7 +9,7 @@ public class Premium extends SavingsAccount{
 
 	@Override
 	public String getAccountType() {
-		return "Premium Savings";
+		return "premium savings";
 	}
 
 }

@@ -9,7 +9,7 @@ public class Basic extends SavingsAccount{
 
 	@Override
 	public String getAccountType() {
-		return "Basic Savings";
+		return "basic savings";
 	}
 
 }

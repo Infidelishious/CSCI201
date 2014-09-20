@@ -9,7 +9,7 @@ public class Deluxe extends SavingsAccount{
 
 	@Override
 	public String getAccountType() {
-		return "Deluxe Savings";
+		return "deluxe savings";
 	}
 
 }
