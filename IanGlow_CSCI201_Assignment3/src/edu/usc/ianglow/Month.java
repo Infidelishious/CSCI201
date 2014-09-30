@@ -37,10 +37,14 @@ public class Month extends JPanel
 		start = s;
 		
 		setLayout(new BorderLayout());
+		setOpaque(true);
+		setBackground(Color.WHITE);
 		
 		centerP = new JPanel();
 		northP = new JPanel(new BorderLayout());
 		northP.setBackground(new Color(238,238,238));
+		northP.setOpaque(true);
+		
 		dayBar = new JPanel(new GridLayout(1,7));
 		
 		createDayBar();
@@ -139,9 +143,7 @@ public class Month extends JPanel
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				CardLayout cl = (CardLayout)mainFrame.outPanel.getLayout();
-					System.out.println("eItem");
+				parent.export();
 			}
 		});
 		
@@ -151,7 +153,7 @@ public class Month extends JPanel
 			public void actionPerformed(ActionEvent arg0) {
 				
 				CardLayout cl = (CardLayout)mainFrame.outPanel.getLayout();
-					System.out.println("aItem");
+				cl.show(mainFrame.outPanel, "about");
 			}
 		});
 		
@@ -237,6 +239,11 @@ public class Month extends JPanel
 	}
 
 	public void createEvent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void editEvent(EventLabel eventLabel) {
 		// TODO Auto-generated method stub
 		
 	}
