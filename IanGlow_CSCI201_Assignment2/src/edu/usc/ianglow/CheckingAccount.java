@@ -14,7 +14,7 @@ public class CheckingAccount extends BaseAccount{
 
 	@Override
 	public String getAccountType() {
-		return "Checking";
+		return "checking";
 	}
 
 }
