@@ -62,6 +62,7 @@ public class Day extends JLabel implements MouseListener
 				parent.currentDay.unselect();
 			parent.currentDay = this;
 			select();
+			parent.updateEventArea();
 		}
 	}
 

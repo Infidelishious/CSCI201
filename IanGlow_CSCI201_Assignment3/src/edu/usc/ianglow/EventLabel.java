@@ -12,6 +12,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 public class EventLabel extends JLabel implements MouseListener{
+	private static final long serialVersionUID = 1L;
+	
 	Month parent;
 	Event event;
 	
@@ -21,6 +23,7 @@ public class EventLabel extends JLabel implements MouseListener{
 		this.event = event;
 		this.parent = parent;
 		setFont(new Font("Helvetica", Font.BOLD, 20));
+		addMouseListener(this);
 		setBorder(BorderFactory.createLineBorder(new Color(154,153,158)));
 	}
 
@@ -30,6 +33,11 @@ public class EventLabel extends JLabel implements MouseListener{
 	}
 
 	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		parent.parent.editEventPanel.show(this.event);
+	}
+	
+	@Override
 	public void mouseEntered(MouseEvent arg0) {}
 
 	@Override
@@ -37,8 +45,5 @@ public class EventLabel extends JLabel implements MouseListener{
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {}
 
 }

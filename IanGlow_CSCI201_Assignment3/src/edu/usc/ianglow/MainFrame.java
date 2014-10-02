@@ -22,29 +22,33 @@ import javax.swing.SwingConstants;
 
 public class MainFrame extends JFrame{
 
+	public Month currentMonth;
+	public EditEventPanel editEventPanel;
+	public ArrayList<Event> events;
 	public JPanel panel, outPanel, aboutPanel;
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Month currentMonth;
-	private ArrayList<Event> events;
-	
+	private AddEventPanel addEventPanel;
 	
 	public MainFrame()
 	{
+		events = new ArrayList<Event>();
 		outPanel = new JPanel(new CardLayout());
 		panel = new JPanel(new BorderLayout());
 		Calendar now = Calendar.getInstance();
-		now.add(Calendar.MONTH, 0);
 		currentMonth = new Month(this, now);
 		panel.add(currentMonth, BorderLayout.CENTER);
 		
+		addEventPanel = new AddEventPanel(this);
 		makeAboutPanel();
+		editEventPanel =  new EditEventPanel(this);
 		outPanel.add(panel, "month");
 		outPanel.add(aboutPanel, "about");
+		outPanel.add(addEventPanel, "add");
+		outPanel.add(editEventPanel, "edit");
 		
 		add(outPanel);
-		
 	}
 
 	private void makeAboutPanel() {
@@ -72,7 +76,6 @@ public class MainFrame extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout cl = (CardLayout)outPanel.getLayout();
 				cl.show(outPanel, "month");
-				
 			}
 			
 		});
@@ -131,7 +134,7 @@ public class MainFrame extends JFrame{
 	{
 		MainFrame mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
-		mainFrame.setSize(500,500);
+		mainFrame.setSize(500,800);
 		mainFrame.setResizable(false);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

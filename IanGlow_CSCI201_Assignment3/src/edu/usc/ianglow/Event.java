@@ -31,7 +31,7 @@ public class Event {
 		SimpleDateFormat format1 = new SimpleDateFormat("h:mm:ss a");
 		
 		return "" + start.get(Calendar.YEAR) + ","
-				+ new DateFormatSymbols().getMonths()[start.get(Calendar.MONTH) - 1] + ","
+				+ new DateFormatSymbols().getMonths()[start.get(Calendar.MONTH)] + ","
 				+ start.get(Calendar.DAY_OF_MONTH) + ","
 				+ title + ","
 				+ location + ","

@@ -3,6 +3,8 @@ package edu.usc.ianglow;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,15 +12,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 public class Month extends JPanel
 {
@@ -30,6 +36,8 @@ public class Month extends JPanel
 	public Day currentDay;
 	public Calendar start;
 	public JPanel centerP, northP, dayBar;
+	private JPanel scrollPanel;
+	private JScrollPane scrollPane;
 	
 	public Month (MainFrame mainFrame, Calendar s)
 	{
@@ -60,6 +68,51 @@ public class Month extends JPanel
 		add(northP, BorderLayout.NORTH);
 		addMenu();
 		
+		selectCurrentDay();
+		updateEventArea();
+	}
+
+	public void updateEventArea() {
+		
+		if(scrollPanel != null || scrollPane != null)
+		{
+			remove(scrollPane);
+		}
+			
+		ArrayList<Event> eventsOnSelectedDay = new ArrayList<Event>();
+		
+		if(currentDay != null)
+		{
+			for(Event i : parent.events)
+			{
+				if(i.start.get(Calendar.YEAR) == start.get(Calendar.YEAR)
+						&& i.start.get(Calendar.MONTH) == start.get(Calendar.MONTH)
+						&& i.start.get(Calendar.DAY_OF_MONTH) == currentDay.day)
+				{
+					eventsOnSelectedDay.add(i);
+				}
+			}
+		}
+		
+		scrollPanel = new JPanel(new GridLayout(eventsOnSelectedDay.size(), 1));
+	    scrollPane = new JScrollPane(scrollPanel);
+	    scrollPane.setPreferredSize(new Dimension(500, 200));
+	    
+	    for(Event i : eventsOnSelectedDay)
+		{
+			scrollPanel.add(new EventLabel(this, i));
+		}
+	    
+	    currentDay.setEventMarker(eventsOnSelectedDay.size() > 0);
+
+	    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    scrollPane.setViewportBorder(new LineBorder(Color.RED));
+	    scrollPane.getViewport().add(scrollPanel, null);
+
+	    add(scrollPane, BorderLayout.SOUTH);
+	    
+	    revalidate();
 	}
 
 	private void createButtons() {
@@ -125,7 +178,7 @@ public class Month extends JPanel
 		final MainFrame mainFrame = this.parent;
 		menuBar = new JMenuBar();
 
-		final JMenuItem emItem = new JMenuItem("Event Manager");
+		final JMenuItem emItem = new JMenuItem("Add Event");
 		final JMenuItem eItem = new JMenuItem("Export");
 		final JMenuItem aItem = new JMenuItem("About");
 		
@@ -133,9 +186,8 @@ public class Month extends JPanel
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
 				CardLayout cl = (CardLayout)mainFrame.outPanel.getLayout();
-					System.out.println("EMItem");
+				cl.show(mainFrame.outPanel,"add");
 			}
 		});
 		
@@ -151,7 +203,6 @@ public class Month extends JPanel
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
 				CardLayout cl = (CardLayout)mainFrame.outPanel.getLayout();
 				cl.show(mainFrame.outPanel, "about");
 			}
@@ -234,19 +285,41 @@ public class Month extends JPanel
 				
 				centerP.add(days[i][j]);
 			}
-		}
-		
+		}	
 	}
 
 	public void createEvent() {
-		// TODO Auto-generated method stub
-		
+		CardLayout cl = (CardLayout)parent.outPanel.getLayout();
+		cl.show(parent.outPanel,"add");
 	}
 
 	public void editEvent(EventLabel eventLabel) {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	public void selectCurrentDay() {
+		Calendar now = Calendar.getInstance();
+		int day = 1;
+		
+		if(now.get(Calendar.MONTH) == start.get(Calendar.MONTH))
+			day = now.get(Calendar.DAY_OF_MONTH);
+		
+		Day temp = getDay(day);
+		temp.mouseClicked(null);
+	}
+	
+	public Day getDay(int day)
+	{
+		for(int i = 0; i < 6; i++)
+		{
+			for(int j = 0; j < 7; j++)
+			{
+				Day temp = days[i][j];
+				if(temp.inMonth && temp.day == day)
+					return temp;
+			}
+		}
+		return null;
+	}
 
 }
