@@ -7,9 +7,11 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -17,24 +19,30 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class AddEventPanel extends JPanel implements ActionListener{
+public class EventMangerPanel extends JPanel implements ActionListener{
 	
 	private static final long serialVersionUID = 983401575517309534L;
 	
 	String[] hours = {"12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"};
+	String[] months = {"January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 	String[] timeSlice = {"00", "15", "30", "45"};
 	String[] ap = {"AM", "PM"};
 	
 	MainFrame parent;
 	JComboBox<String> hourDropS, minuteDropS, ampmDropS,
-		hourDropE, minuteDropE, ampmDropE;
+		hourDropE, minuteDropE, ampmDropE, yearDrop, monthDrop, dayDrop;
 	JTextField title, location;
 
 	JLabel error;
 	JButton createEvent, cancelEvent;
+	
+	int currentYear;
 
-	public AddEventPanel(MainFrame parent)
+	public EventMangerPanel(MainFrame parent)
 	{
+		Calendar now = Calendar.getInstance();
+		currentYear = now.get(Calendar.YEAR);
+		
 		this.parent = parent;
 		hourDropS = new JComboBox<String>(hours);
 		minuteDropS = new JComboBox<String>(timeSlice);
@@ -42,14 +50,25 @@ public class AddEventPanel extends JPanel implements ActionListener{
 		hourDropE = new JComboBox<String>(hours);
 		minuteDropE = new JComboBox<String>(timeSlice);
 		ampmDropE = new JComboBox<String>(ap);
+		
+		makeYearDrop();
+		monthDrop = new JComboBox<String>(months);
+		monthDrop.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				updateDayDrop();
+		}});
+		dayDrop = new JComboBox<String>(hours);
+		updateDayDrop();
+		
 		title = new JTextField(30);
 		location = new JTextField(30);
 		
-		setLayout(new GridLayout(7,1));
+		setLayout(new GridLayout(8,1));
 		setOpaque(true);
 		setBackground(new Color(138,157,180));
 		
-		JLabel header = new JLabel("Add Event", SwingConstants.CENTER);
+		JLabel header = new JLabel("Event Manager", SwingConstants.CENTER);
 		header.setFont(new Font("Helvetica", Font.BOLD, 30));
 		add(header);
 		
@@ -68,6 +87,17 @@ public class AddEventPanel extends JPanel implements ActionListener{
 		temp = new JPanel();
 		temp.setBackground(Color.WHITE);
 		JPanel temp2 = new JPanel(new GridLayout(1,3));
+		temp2.setBackground(Color.WHITE);
+		temp.add(new JLabel("Date:"), BorderLayout.WEST);
+		temp2.add(yearDrop);
+		temp2.add(monthDrop);
+		temp2.add(dayDrop);
+		temp.add(temp2, BorderLayout.CENTER);
+		add(temp);
+		
+		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
+		temp2 = new JPanel(new GridLayout(1,3));
 		temp2.setBackground(Color.WHITE);
 		temp.add(new JLabel("Start:"), BorderLayout.WEST);
 		temp2.add(hourDropS);
@@ -105,6 +135,33 @@ public class AddEventPanel extends JPanel implements ActionListener{
 		add(temp);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void updateDayDrop() {
+		Calendar selected = new GregorianCalendar(currentYear + yearDrop.getSelectedIndex(),monthDrop.getSelectedIndex(),1);
+		ArrayList<String> days = new ArrayList<String>();
+		
+		for(int i = 1; i <= selected.getActualMaximum(Calendar.DAY_OF_MONTH); i++)
+			days.add("" + i);
+		
+		dayDrop.setModel(new DefaultComboBoxModel(days.toArray()));
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void makeYearDrop() {
+		ArrayList<String> years = new ArrayList<String>();
+		
+		for(int i = 0; i < 10; i++)
+			years.add("" + (i + currentYear));
+		
+		yearDrop = new JComboBox<String>();
+		yearDrop.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				updateDayDrop();
+		}});
+		yearDrop.setModel(new DefaultComboBoxModel(years.toArray()));
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getSource() == cancelEvent)
@@ -137,9 +194,9 @@ public class AddEventPanel extends JPanel implements ActionListener{
 			if(ampmDropS.getSelectedIndex() == 1)
 				sh += 12;
 			
-			Calendar start = new GregorianCalendar(parent.currentMonth.start.get(Calendar.YEAR)
-					,parent.currentMonth.start.get(Calendar.MONTH)
-					,parent.currentMonth.currentDay.day
+			Calendar start = new GregorianCalendar(currentYear + yearDrop.getSelectedIndex()
+					,monthDrop.getSelectedIndex()
+					,dayDrop.getSelectedIndex() + 1
 					,sh, sm);
 			
 			int eh = hourDropE.getSelectedIndex();
@@ -147,9 +204,9 @@ public class AddEventPanel extends JPanel implements ActionListener{
 			if(ampmDropE.getSelectedIndex() == 1)
 				eh += 12;
 			
-			Calendar end = new GregorianCalendar(parent.currentMonth.start.get(Calendar.YEAR)
-					,parent.currentMonth.start.get(Calendar.MONTH)
-					,parent.currentMonth.currentDay.day
+			Calendar end = new GregorianCalendar(currentYear + yearDrop.getSelectedIndex()
+					,monthDrop.getSelectedIndex()
+					,dayDrop.getSelectedIndex() + 1
 					,eh, em);
 			
 			parent.events.add(new Event(t, l, start, end));
@@ -166,6 +223,7 @@ public class AddEventPanel extends JPanel implements ActionListener{
 			ampmDropE.setSelectedIndex(0);
 			CardLayout cl = (CardLayout)parent.outPanel.getLayout();
 			cl.show(parent.outPanel, "month");
+			parent.currentMonth.addMarkers();
 		}
 		
 	}

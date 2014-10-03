@@ -30,7 +30,7 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		hourDropE, minuteDropE, ampmDropE;
 	JTextField title, location;
 	JButton changEvent, deleteEvent, cancelEvent;
-	
+	JLabel error;
 	Event event;
 
 	public EditEventPanel(MainFrame parent)
@@ -45,7 +45,7 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		title = new JTextField(30);
 		location = new JTextField(30);
 		
-		setLayout(new GridLayout(6,1));
+		setLayout(new GridLayout(7,1));
 		setBackground(new Color(138,157,180));
 		setOpaque(false);
 		
@@ -100,16 +100,30 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		temp.add(deleteEvent, BorderLayout.CENTER);
 		temp.add(cancelEvent, BorderLayout.EAST);
 		add(temp);
+		
+		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
+		error = new JLabel(" ");
+		error.setForeground(Color.RED);
+		temp.add(error, BorderLayout.CENTER);
+		add(temp);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getSource() == changEvent)
 		{
-			parent.events.remove(event);
-			
 			String t = title.getText();
 			String l = location.getText();
+			
+			if(t.length() == 0 || l.length() == 0)
+			{
+				error.setText("enter a title and a location");
+				return;
+			}
+			
+			parent.events.remove(event);
+			
 			int sh = hourDropS.getSelectedIndex();
 			int sm = minuteDropS.getSelectedIndex() * 15;
 			if(ampmDropS.getSelectedIndex() == 1)
@@ -145,6 +159,7 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		event = null;
 		title.setText("");
 		location.setText("");
+		error.setText("");
 		hourDropS.setSelectedIndex(0);
 		minuteDropS.setSelectedIndex(0);
 		ampmDropS.setSelectedIndex(0);

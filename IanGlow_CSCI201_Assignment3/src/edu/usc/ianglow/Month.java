@@ -3,7 +3,6 @@ package edu.usc.ianglow;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -17,14 +16,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 
 public class Month extends JPanel
 {
@@ -70,6 +67,30 @@ public class Month extends JPanel
 		
 		selectCurrentDay();
 		updateEventArea();
+		addMarkers();
+		
+		Calendar now = Calendar.getInstance();
+				
+		if(now.get(Calendar.YEAR) == start.get(Calendar.YEAR) &&
+				now.get(Calendar.MONTH) == start.get(Calendar.MONTH))
+		yellowCurrentDay();
+	}
+
+	public void addMarkers() {
+		
+		for(int j = 1; j <= 31; j++)
+		{
+			for(Event i : parent.events)
+			{
+				if(i.start.get(Calendar.YEAR) == start.get(Calendar.YEAR)
+						&& i.start.get(Calendar.MONTH) == start.get(Calendar.MONTH)
+						&& i.start.get(Calendar.DAY_OF_MONTH) == j)
+				{
+					getDay(j).setEventMarker(true);
+				}
+			}
+		}
+		
 	}
 
 	public void updateEventArea() {
@@ -182,7 +203,7 @@ public class Month extends JPanel
 		final MainFrame mainFrame = this.parent;
 		menuBar = new JMenuBar();
 
-		final JMenuItem emItem = new JMenuItem("Add Event");
+		final JMenuItem emItem = new JMenuItem("Event Manager");
 		final JMenuItem eItem = new JMenuItem("Export");
 		final JMenuItem aItem = new JMenuItem("About");
 		
@@ -195,7 +216,7 @@ public class Month extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout cl = (CardLayout)mainFrame.outPanel.getLayout();
-				cl.show(mainFrame.outPanel,"add");
+				cl.show(mainFrame.outPanel,"manager");
 			}
 		});
 		
@@ -314,6 +335,17 @@ public class Month extends JPanel
 		
 		Day temp = getDay(day);
 		temp.mouseClicked(null);
+	}
+	
+	public void yellowCurrentDay() {
+		Calendar now = Calendar.getInstance();
+		
+		if(now.get(Calendar.MONTH) == start.get(Calendar.MONTH))
+		{
+			int day = now.get(Calendar.DAY_OF_MONTH);
+			Day temp = getDay(day);
+			temp.selected = true;
+		}
 	}
 	
 	public Day getDay(int day)

@@ -74,7 +74,12 @@ public class Day extends JLabel implements MouseListener
 
 	private void unselect() {
 		setForeground(new Color(39,42,51));
-		setBackground(new Color(201,202,207));
+		
+		if(!selected)
+			setBackground(new Color(201,202,207));
+		else
+			setBackground(Color.YELLOW);
+		
 		setBorder(BorderFactory.createLineBorder(new Color(154,153,158)));
 	}
 

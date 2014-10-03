@@ -30,6 +30,7 @@ public class MainFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
 	private AddEventPanel addEventPanel;
+	private EventMangerPanel eventMangerPanel;
 	
 	public MainFrame()
 	{
@@ -43,10 +44,13 @@ public class MainFrame extends JFrame{
 		addEventPanel = new AddEventPanel(this);
 		makeAboutPanel();
 		editEventPanel =  new EditEventPanel(this);
+		eventMangerPanel = new EventMangerPanel(this);
+		
 		outPanel.add(panel, "month");
 		outPanel.add(aboutPanel, "about");
 		outPanel.add(addEventPanel, "add");
 		outPanel.add(editEventPanel, "edit");
+		outPanel.add(eventMangerPanel , "manager");
 		
 		add(outPanel);
 	}
@@ -64,7 +68,7 @@ public class MainFrame extends JFrame{
 		
 		JPanel backInfoPanel = new JPanel(new BorderLayout());
 		
-		temp = new JLabel("<html>Section: Monday/Wednesday Noon<br>Finished: October 2nd</html>", SwingConstants.CENTER);
+		temp = new JLabel("<html>Section: Monday/Wednesday Noon<br>Finished: October 3rd</html>", SwingConstants.CENTER);
 		temp.setFont(new Font("Helvetica", Font.BOLD, 16));
 		backInfoPanel.add(temp, BorderLayout.WEST);
 		
