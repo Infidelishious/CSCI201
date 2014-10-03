@@ -24,6 +24,8 @@ public class EventLabel extends JLabel implements MouseListener{
 		this.parent = parent;
 		setFont(new Font("Helvetica", Font.BOLD, 20));
 		addMouseListener(this);
+		setBackground(Color.WHITE);
+		setOpaque(false);
 		setBorder(BorderFactory.createLineBorder(new Color(154,153,158)));
 	}
 

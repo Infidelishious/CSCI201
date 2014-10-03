@@ -2,6 +2,7 @@ package edu.usc.ianglow;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -45,23 +46,29 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		location = new JTextField(30);
 		
 		setLayout(new GridLayout(6,1));
+		setBackground(new Color(138,157,180));
+		setOpaque(false);
 		
 		JLabel header = new JLabel("Edit Event:", SwingConstants.CENTER);
 		header.setFont(new Font("Helvetica", Font.BOLD, 30));
 		add(header);
 		
 		JPanel temp = new JPanel();
+		temp.setBackground(Color.WHITE);
 		temp.add(new JLabel("Title:"), BorderLayout.WEST);
 		temp.add(title, BorderLayout.EAST);
 		add(temp);
 		
 		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
 		temp.add(new JLabel("Location:"), BorderLayout.WEST);
 		temp.add(location, BorderLayout.EAST);
 		add(temp);
 		
 		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
 		JPanel temp2 = new JPanel(new GridLayout(1,3));
+		temp2.setBackground(Color.WHITE);
 		temp.add(new JLabel("Start:"), BorderLayout.WEST);
 		temp2.add(hourDropS);
 		temp2.add(minuteDropS);
@@ -70,7 +77,9 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		add(temp);
 		
 		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
 		temp2 = new JPanel(new GridLayout(1,3));
+		temp2.setBackground(Color.WHITE);
 		temp.add(new JLabel("End:"), BorderLayout.WEST);
 		temp2.add(hourDropE);
 		temp2.add(minuteDropE);
@@ -79,6 +88,7 @@ public class EditEventPanel extends JPanel implements ActionListener{
 		add(temp);
 		
 		temp = new JPanel();
+		temp.setBackground(Color.WHITE);
 		changEvent = new JButton("Change");
 		changEvent.addActionListener(this);
 		cancelEvent = new JButton("Cancel");

@@ -95,6 +95,8 @@ public class Month extends JPanel
 		}
 		
 		scrollPanel = new JPanel(new GridLayout(eventsOnSelectedDay.size(), 1));
+		scrollPanel.setBackground(Color.WHITE);
+		scrollPanel.setOpaque(true);
 	    scrollPane = new JScrollPane(scrollPanel);
 	    scrollPane.setPreferredSize(new Dimension(500, 200));
 	    
@@ -107,7 +109,6 @@ public class Month extends JPanel
 
 	    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	    scrollPane.setViewportBorder(new LineBorder(Color.RED));
 	    scrollPane.getViewport().add(scrollPanel, null);
 
 	    add(scrollPane, BorderLayout.SOUTH);
@@ -116,6 +117,9 @@ public class Month extends JPanel
 	}
 
 	private void createButtons() {
+		
+//		northP.setBackground(new Color(138,157,180));
+		
 		JLabel temp = new JLabel("", SwingConstants.RIGHT);
 		temp.setIcon(new ImageIcon("left.png"));
 		temp.addMouseListener(new MouseListener(){
@@ -181,6 +185,10 @@ public class Month extends JPanel
 		final JMenuItem emItem = new JMenuItem("Add Event");
 		final JMenuItem eItem = new JMenuItem("Export");
 		final JMenuItem aItem = new JMenuItem("About");
+		
+		emItem.setBackground(new Color(138,157,180));
+		eItem.setBackground(new Color(138,157,180));
+		aItem.setBackground(new Color(138,157,180));
 		
 		emItem.addActionListener(new ActionListener()
 		{
