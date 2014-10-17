@@ -2,8 +2,8 @@ package edu.usc.ianglow;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -14,7 +14,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
@@ -30,11 +29,12 @@ import org.w3c.dom.NodeList;
 public class MainFrame extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
+	
+	public static Color SWING_GRAY = UIManager.getColor ("Panel.background");
 
-	String[] columnNames = {"Car#",
-            "X",
-            "Y"};
+	String[] columnNames = {"Car #","X","Y"};
 	ArrayList<String[]> data;
+	ArrayList<Car> cars;
 	
 	
 	public DrawingPanel drawPanel;
@@ -45,6 +45,9 @@ public class MainFrame extends JFrame{
 	public MainFrame()
 	{
 		super("Roadway Simulator");
+		
+		cars = new ArrayList<Car>();
+		
 		 try {
 			UIManager.setLookAndFeel(
 			            UIManager.getCrossPlatformLookAndFeelClassName());
@@ -86,20 +89,15 @@ public class MainFrame extends JFrame{
 		data.add(columnNames);
 		
 		makeTable(true);
-		add(table, BorderLayout.EAST);
 		
 		drawPanel = new DrawingPanel();
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		panel.setOpaque(true);
-		panel.setBackground(Color.WHITE);
+		OutPanel panel = new OutPanel();
 		panel.add(drawPanel);
 		
 		add(panel, BorderLayout.CENTER);
 	}
 
-	private void makeTable(boolean first) {
+	public void makeTable(boolean first) {
 		if(!first)
 			remove(table);
 		
@@ -119,11 +117,22 @@ public class MainFrame extends JFrame{
 		table = new JTable(dataModel);
 		table.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		table.setPreferredSize(new Dimension(200,600));
-		table.setBackground(new Color(200,200,200));
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		table.setBackground(SWING_GRAY);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+		    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		        c.setBackground(row == 0 ? SWING_GRAY : Color.WHITE);
+		        return c;
+		    }
+		};
 		renderer.setHorizontalAlignment(JLabel.CENTER);
 		table.setDefaultRenderer(String.class, renderer);
 		table.setDefaultRenderer(Object.class, renderer);
+		add(table, BorderLayout.EAST);
+		revalidate();
 	}
 
 	
@@ -134,11 +143,13 @@ public class MainFrame extends JFrame{
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(in);
-		NodeList nList = doc.getDocumentElement().getElementsByTagName("tile");
+		NodeList tileList = doc.getDocumentElement().getElementsByTagName("tile");
+		NodeList carList = doc.getDocumentElement().getElementsByTagName("car");
+		NodeList locList = doc.getDocumentElement().getElementsByTagName("location");
 		
 		for(int i = 0; i < 9; i++){
 			for(int j = 0; j < 9; j++){
-				Element n = (Element) nList.item(i*9 + j);
+				Element n = (Element) tileList.item(i*9 + j);
 				String t = n.getAttribute("type");
 				String d = n.getAttribute("degree");
 				boolean[] passible = createNodeArray(t,d);
@@ -146,6 +157,58 @@ public class MainFrame extends JFrame{
 			}
 		}
 		drawPanel.update(directions);
+		
+		for(int i = 0; i < carList.getLength(); i++)
+		{
+			Element n = (Element) carList.item(i),
+					m = (Element) locList.item(i);
+			
+			int ai = Integer.parseInt(n.getAttribute("ai"));
+			if(ai == 1){
+				cars.add(new Car1(this, i + 1, 
+						Integer.parseInt(n.getAttribute("ai")), 
+						Integer.parseInt(m.getAttribute("x")) - 1, 
+						m.getAttribute("y").charAt(0) - 'A', 
+						n.getAttribute("color"),
+						Float.parseFloat(n.getAttribute("speed"))));	
+			}
+			else if(ai == 2){
+				cars.add(new Car2(this, i + 1, 
+						Integer.parseInt(n.getAttribute("ai")), 
+						Integer.parseInt(m.getAttribute("x")) - 1, 
+						m.getAttribute("y").charAt(0) - 'A', 
+						n.getAttribute("color"),
+						Float.parseFloat(n.getAttribute("speed"))));	
+			}
+			else if(ai == 3){
+				cars.add(new Car3(this, i + 1, 
+						Integer.parseInt(n.getAttribute("ai")), 
+						Integer.parseInt(m.getAttribute("x")) - 1, 
+						m.getAttribute("y").charAt(0) - 'A', 
+						n.getAttribute("color"),
+						Float.parseFloat(n.getAttribute("speed"))));	
+			}
+			else if(ai == 4){
+				cars.add(new Car4(this, i + 1, 
+						Integer.parseInt(n.getAttribute("ai")), 
+						Integer.parseInt(m.getAttribute("x")) - 1, 
+						m.getAttribute("y").charAt(0) - 'A', 
+						n.getAttribute("color"),
+						Float.parseFloat(n.getAttribute("speed"))));	
+			}
+		}
+		
+		for(Car i: cars)
+		{
+			String[] names = {"" + i.num,
+		            "" + (i.x + 1),
+		            "" + new String(Character.toChars(i.y + 'A'))};
+			data.add(names);
+			makeTable(false);
+			
+			System.out.println(i.toString());
+			new Thread(i).start();
+		}
 	}
 
 
@@ -206,7 +269,7 @@ public class MainFrame extends JFrame{
 		MainFrame mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
 		mainFrame.setSize(800,600);
-		mainFrame.setMinimumSize(new Dimension(50*9 + 250,50*9 + 80));
+		mainFrame.setMinimumSize(new Dimension(50*9 + 280,50*9 + 110));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
