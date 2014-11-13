@@ -127,9 +127,9 @@ public class MainFrame extends JFrame{
 	private void makeSquares() {
 		try {
 			
-			wood = new Square(panel,"0", "Wood", ImageIO.read(new File("img/wood.png")), 150, 10);
-			metal = new Square(panel,"0", "Metal", ImageIO.read(new File("img/metal.png")), 300, 10);
-			plastic = new Square(panel,"0", "Plastic", ImageIO.read(new File("img/plastic.png")), 450, 10);
+			wood = new Square(panel,"0", "Wood", ImageIO.read(new File("img/wood.png")), 200, 70);
+			metal = new Square(panel,"0", "Metal", ImageIO.read(new File("img/metal.png")), 300, 70);
+			plastic = new Square(panel,"0", "Plastic", ImageIO.read(new File("img/plastic.png")), 400, 70);
 			
 			screwdriver = new Square(panel, "0", "Screwdriver", ImageIO.read(new File("img/screwdriver.png")), 10, 100);
 			hammer = new Square(panel, "0", "Hammer", ImageIO.read(new File("img/hammer.png")), 10, 180);
@@ -137,21 +137,21 @@ public class MainFrame extends JFrame{
 			pliers = new Square(panel,"0", "Pliers", ImageIO.read(new File("img/pliers.png")), 10, 340);
 			scissors = new Square(panel,"0", "Scissors", ImageIO.read(new File("img/scissors.png")), 10, 420);
 			
-			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 140);
-			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 140);
-			wb1 = new Worktable(panel, Worktable.BENCH, 310, 140);
-			wb2 = new Worktable(panel, Worktable.BENCH, 380, 140);
-			wb3 = new Worktable(panel, Worktable.BENCH, 450 , 140);
-			furn1 = new Worktable(panel, Worktable.FURNACE, 170 ,280);
-			furn2 = new Worktable(panel, Worktable.FURNACE, 240 ,280);
-			ts1 = new Worktable(panel, Worktable.SAW, 310 ,280);
-			ts2 = new Worktable(panel, Worktable.SAW, 380 ,280);
-			ts3= new Worktable(panel, Worktable.SAW, 450 ,280);
-			ps1 = new Worktable(panel, Worktable.PAINTING, 170 ,420);
-			ps2 = new Worktable(panel, Worktable.PAINTING, 240 ,420);
-			ps3 = new Worktable(panel, Worktable.PAINTING, 310 ,420);
-			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,420);
-			press = new Worktable(panel, Worktable.PRESS, 450 ,420);
+			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 200);
+			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 200);
+			wb1 = new Worktable(panel, Worktable.BENCH, 310, 200);
+			wb2 = new Worktable(panel, Worktable.BENCH, 380, 200);
+			wb3 = new Worktable(panel, Worktable.BENCH, 450 , 200);
+			furn1 = new Worktable(panel, Worktable.FURNACE, 170 ,320);
+			furn2 = new Worktable(panel, Worktable.FURNACE, 240 ,320);
+			ts1 = new Worktable(panel, Worktable.SAW, 310 ,320);
+			ts2 = new Worktable(panel, Worktable.SAW, 380 ,320);
+			ts3= new Worktable(panel, Worktable.SAW, 450 ,320);
+			ps1 = new Worktable(panel, Worktable.PAINTING, 170 ,440);
+			ps2 = new Worktable(panel, Worktable.PAINTING, 240 ,440);
+			ps3 = new Worktable(panel, Worktable.PAINTING, 310 ,440);
+			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,440);
+			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
 			
 			Worker wk = new Worker(panel, 50, 40);
 			panel.add(wk);

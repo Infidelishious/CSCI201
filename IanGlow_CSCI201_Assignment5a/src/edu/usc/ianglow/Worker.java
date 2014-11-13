@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 public class Worker extends JPanel{
 	
-	private static int HIGH_Y = 100,
+	private static int HIGH_Y = 180,
 			MID_Y = 300,
 			LOW_Y = 500,
 			LEFT_X = 100,
@@ -123,10 +123,8 @@ public class Worker extends JPanel{
 
 		boolean onY = false,
 				onX = false,
-				workTarget = true,
-				workStart = true;
+				workTarget = true;
 				
-		
 		int pX = x, pY = y,
 				tX = s.x, tY = s.y;
 		
@@ -141,46 +139,37 @@ public class Worker extends JPanel{
 		
 		if(x < LEFT_X)
 		{
-			workStart = false;
+			larps.add(new Node(LEFT_X, y));
+			pX = LEFT_X;
+			pY = y;
+			onY = true;
 		}
-		else if(y > RIGHT_X)
+		else if(x > RIGHT_X)
 		{
-			workStart = false;
+			larps.add(new Node(RIGHT_X, y));
+			pX = RIGHT_X;
+			pY = y;
+			onY = true;
 		}
-		
-		if(!workStart)
+		else if(x == RIGHT_X)
 		{
-			if(x < LEFT_X)
-			{
-				larps.add(new Node(LEFT_X, y));
-				pX = LEFT_X;
-				pY = y;
-				onY = true;
-			}
-			else if(x > RIGHT_X)
-			{
-				larps.add(new Node(RIGHT_X, y));
-				pX = RIGHT_X;
-				pY = y;
-				onY = true;
-			}
-			else if(x == RIGHT_X)
-			{
-				onY = true;
-			}
+			onY = true;
 		}
 		
-		if(workTarget && workStart)
+		if(workTarget)
 		{
+			
+			//?
+			
 			if(tY == y) // Go to if on same level
 			{
-				larps.add(new Node(x, y + 60));
-				larps.add(new Node(tY, y + 60));
+				larps.add(new Node(x, y - 60));
+				larps.add(new Node(tY, y - 60));
 				larps.add(new Node(tY, tY));
 			}
 			else
 			{
-				if(Math.abs(x - LEFT_X) > Math.abs(x - RIGHT_X))
+				if(Math.abs(pX - LEFT_X) > Math.abs(pX - RIGHT_X))
 				{
 					larps.add(new Node(RIGHT_X, y));
 					pX = LEFT_X;
@@ -193,11 +182,42 @@ public class Worker extends JPanel{
 					pY = y;
 				}
 				
-				larps.add(new Node(pX, tY + 60));
-				larps.add(new Node(tY, y + 60));
-				larps.add(new Node(tY, tY));
-				
+				larps.add(new Node(pX, tY - 60));
+				larps.add(new Node(tX, tY - 60));
+				larps.add(new Node(tX, tY));
 			}
+		}
+		else
+		{
+			if(Math.abs(pX - LEFT_X) > Math.abs(pX - RIGHT_X))
+			{
+				larps.add(new Node(RIGHT_X, y));
+				pX = LEFT_X;
+				pY = y;
+			}
+			else
+			{
+				larps.add(new Node(RIGHT_X, y));
+				pX = RIGHT_X;
+				pY = y;
+			}
+			
+			larps.add(new Node(pX, HIGH_Y));
+			pY = HIGH_Y;
+			
+			if(Math.abs(tX - LEFT_X) > Math.abs(tX - RIGHT_X))
+			{
+				larps.add(new Node(RIGHT_X, y));
+				pX = LEFT_X;
+			}
+			else
+			{
+				larps.add(new Node(RIGHT_X, y));
+				pX = RIGHT_X;
+			}
+			
+			larps.add(new Node(pX, tY));
+			larps.add(new Node(tX, tY));
 		}
 		
 		
