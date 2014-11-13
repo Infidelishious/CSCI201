@@ -28,12 +28,12 @@ public class OutPanel extends JPanel {
 
 		g.setColor(Color.BLACK);
 		g.setFont(FONT);
-		g.drawString("Anvils", 220, 200);
-		g.drawString("Work Benches", 360, 200);
-		g.drawString("Furnaces", 205, 320);
-		g.drawString("Table Saws", 375, 320);
-		g.drawString("Painting Stations", 250, 440);
-		g.drawString("Press", 467, 440);
+		g.drawString("Anvils", 220, 220);
+		g.drawString("Work Benches", 360, 220);
+		g.drawString("Furnaces", 205, 360);
+		g.drawString("Table Saws", 375, 360);
+		g.drawString("Painting Stations", 250, 500);
+		g.drawString("Press", 467, 500);
 	}
 
 }

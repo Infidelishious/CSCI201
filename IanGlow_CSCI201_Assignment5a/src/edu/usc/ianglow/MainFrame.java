@@ -137,21 +137,32 @@ public class MainFrame extends JFrame{
 			pliers = new Square(panel,"0", "Pliers", ImageIO.read(new File("img/pliers.png")), 10, 340);
 			scissors = new Square(panel,"0", "Scissors", ImageIO.read(new File("img/scissors.png")), 10, 420);
 			
-			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 120);
-			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 120);
-			wb1 = new Worktable(panel, Worktable.BENCH, 310, 120);
-			wb2 = new Worktable(panel, Worktable.BENCH, 380, 120);
-			wb3 = new Worktable(panel, Worktable.BENCH, 450 , 120);
-			furn1 = new Worktable(panel, Worktable.FURNACE, 170 ,240);
-			furn2 = new Worktable(panel, Worktable.FURNACE, 240 ,240);
-			ts1 = new Worktable(panel, Worktable.SAW, 310 ,240);
-			ts2 = new Worktable(panel, Worktable.SAW, 380 ,240);
-			ts3= new Worktable(panel, Worktable.SAW, 450 ,240);
-			ps1 = new Worktable(panel, Worktable.PAINTING, 170 ,360);
-			ps2 = new Worktable(panel, Worktable.PAINTING, 240 ,360);
-			ps3 = new Worktable(panel, Worktable.PAINTING, 310 ,360);
-			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,360);
-			press = new Worktable(panel, Worktable.PRESS, 450 ,360);
+			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 140);
+			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 140);
+			wb1 = new Worktable(panel, Worktable.BENCH, 310, 140);
+			wb2 = new Worktable(panel, Worktable.BENCH, 380, 140);
+			wb3 = new Worktable(panel, Worktable.BENCH, 450 , 140);
+			furn1 = new Worktable(panel, Worktable.FURNACE, 170 ,280);
+			furn2 = new Worktable(panel, Worktable.FURNACE, 240 ,280);
+			ts1 = new Worktable(panel, Worktable.SAW, 310 ,280);
+			ts2 = new Worktable(panel, Worktable.SAW, 380 ,280);
+			ts3= new Worktable(panel, Worktable.SAW, 450 ,280);
+			ps1 = new Worktable(panel, Worktable.PAINTING, 170 ,420);
+			ps2 = new Worktable(panel, Worktable.PAINTING, 240 ,420);
+			ps3 = new Worktable(panel, Worktable.PAINTING, 310 ,420);
+			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,420);
+			press = new Worktable(panel, Worktable.PRESS, 450 ,420);
+			
+			Worker wk = new Worker(panel, 50, 40);
+			panel.add(wk);
+			
+			 wk.facneyLarp(new LarpListener(){
+
+					@Override
+					public void reachedLocation() {
+						System.out.println("Larp Finished");
+						
+					}}, press);
 			
 			tabels.add(anvil1);
 			tabels.add(anvil2);
@@ -194,6 +205,7 @@ public class MainFrame extends JFrame{
 			panel.add(paintbrush);
 			panel.add(pliers);
 			panel.add(scissors);
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -30,6 +30,7 @@ public class Square extends JPanel {
 		this.label = label;
 		this.top = top;
 		this.img = img;
+		this.setOpaque(false);
 	}
 
 	public Square(OutPanel panel, String label, String top, Image img, int x, int y)
