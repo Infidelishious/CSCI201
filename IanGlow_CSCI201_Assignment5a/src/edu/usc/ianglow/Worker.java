@@ -13,9 +13,7 @@ import javax.swing.JPanel;
 
 public class Worker extends JPanel{
 	
-	private static int HIGH_Y = 180,
-			MID_Y = 300,
-			LOW_Y = 500,
+	private static int HIGH_Y = 140,
 			LEFT_X = 100,
 			RIGHT_X = 500;
 	
@@ -25,6 +23,7 @@ public class Worker extends JPanel{
 	boolean moving;
 	int x = 0,
 		y = 0;
+	int num_screw = 0, num_hammer = 0, num_pb = 0, num_pliers = 0, num_scissors = 0;
 
 	public Worker(OutPanel panel)
 	{
@@ -155,31 +154,34 @@ public class Worker extends JPanel{
 		{
 			onY = true;
 		}
+		else
+		{
+			larps.add(new Node(x,y - 60));
+		}
 		
 		if(workTarget)
 		{
+			pY = y - 60;
+			larps.add(new Node(x, pY));
 			
-			//?
 			
 			if(tY == y) // Go to if on same level
 			{
-				larps.add(new Node(x, y - 60));
-				larps.add(new Node(tY, y - 60));
+				
+				larps.add(new Node(tX, pY));
 				larps.add(new Node(tY, tY));
 			}
 			else
 			{
 				if(Math.abs(pX - LEFT_X) > Math.abs(pX - RIGHT_X))
 				{
-					larps.add(new Node(RIGHT_X, y));
-					pX = LEFT_X;
-					pY = y;
+					larps.add(new Node(RIGHT_X, pY));
+					pX = RIGHT_X;
 				}
 				else
 				{
-					larps.add(new Node(RIGHT_X, y));
-					pX = RIGHT_X;
-					pY = y;
+					larps.add(new Node(LEFT_X, pY));
+					pX = LEFT_X;
 				}
 				
 				larps.add(new Node(pX, tY - 60));
@@ -189,43 +191,39 @@ public class Worker extends JPanel{
 		}
 		else
 		{
+			int ppx;
+			pY = y - 60;
+			
 			if(Math.abs(pX - LEFT_X) > Math.abs(pX - RIGHT_X))
 			{
-				larps.add(new Node(RIGHT_X, y));
-				pX = LEFT_X;
-				pY = y;
+				larps.add(new Node(RIGHT_X, pY));
+				pX = RIGHT_X;
 			}
 			else
 			{
-				larps.add(new Node(RIGHT_X, y));
-				pX = RIGHT_X;
-				pY = y;
+				larps.add(new Node(LEFT_X, pY));
+				pX = LEFT_X;
 			}
-			
-			larps.add(new Node(pX, HIGH_Y));
-			pY = HIGH_Y;
 			
 			if(Math.abs(tX - LEFT_X) > Math.abs(tX - RIGHT_X))
 			{
-				larps.add(new Node(RIGHT_X, y));
-				pX = LEFT_X;
+				ppx = RIGHT_X;
 			}
 			else
 			{
-				larps.add(new Node(RIGHT_X, y));
-				pX = RIGHT_X;
+				ppx = LEFT_X;
+			}
+			
+			if(ppx != pX)
+			{
+				pY = HIGH_Y;
+				larps.add(new Node(pX, pY));
+				larps.add(new Node(ppx, pY));
+				pX = ppx;
 			}
 			
 			larps.add(new Node(pX, tY));
 			larps.add(new Node(tX, tY));
-		}
-		
-		
-		
-			
-		if(Math.abs(pX - tX) < 150 && Math.abs(pY - tY) < 150)
-		{
-			larps.add(new Node(tY, tY));
 		}
 		
 		final Worker thiss = this;
@@ -261,9 +259,41 @@ public class Worker extends JPanel{
 		th.start();
 	}
 	
+	public void addTool(int tool)
+	{
+		if(tool == ToolShead.SCREWDRIVER)
+			num_screw++;
+		else if(tool == ToolShead.HAMMER)
+			 num_hammer++;
+		else if(tool == ToolShead.PLIERS)
+			num_pliers++;
+		else if(tool == ToolShead.SCISSORS)
+			num_scissors++;
+		else
+			num_pb++;
+	}
+	
+	public void removeTool(int tool)
+	{
+		if(tool == ToolShead.SCREWDRIVER)
+			num_screw--;
+		else if(tool == ToolShead.HAMMER)
+			 num_hammer--;
+		else if(tool == ToolShead.PLIERS)
+			num_pliers--;
+		else if(tool == ToolShead.SCISSORS)
+			num_scissors--;
+		else
+			num_pb--;
+	}
+	
+	public void getTools() { //Returns after tools have been colected
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private class Node
 	{
-		
 		Node(int x, int y)
 		{
 			this.x = x;
@@ -272,8 +302,8 @@ public class Worker extends JPanel{
 		
 		int x;
 		int y;
-		
-		
 	}
+
+	
 	
 }

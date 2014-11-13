@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -47,11 +48,15 @@ public class MainFrame extends JFrame{
 	public MainFrame thiss;
 	public Thread painter;
 	
-	Square wood, metal, plastic;
+	Square wood, metal, plastic, tasks;
 	
 	Square screwdriver, hammer, paintbrush, pliers, scissors;
 	
 	Worktable anvil1, anvil2, wb1, wb2, wb3, furn1, furn2, ts1, ts2, ts3, ps1, ps2, ps3, ps4, press;
+	
+	ToolShead toolshead;
+	
+	int workers;
 	
 	public MainFrame()
 	{
@@ -59,6 +64,7 @@ public class MainFrame extends JFrame{
 		rpcFiles = new ArrayList<File>();
 		factoryFiles = new ArrayList<File>();
 		tabels = new ArrayList<Worktable>();
+		toolshead = new ToolShead(this);
 		
 		 try {
 			UIManager.setLookAndFeel(
@@ -137,6 +143,8 @@ public class MainFrame extends JFrame{
 			pliers = new Square(panel,"0", "Pliers", ImageIO.read(new File("img/pliers.png")), 10, 340);
 			scissors = new Square(panel,"0", "Scissors", ImageIO.read(new File("img/scissors.png")), 10, 420);
 			
+			tasks = new Square(panel,"", "", ImageIO.read(new File("img/tasks.png")), 570, 20);
+			
 			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 200);
 			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 200);
 			wb1 = new Worktable(panel, Worktable.BENCH, 310, 200);
@@ -153,14 +161,38 @@ public class MainFrame extends JFrame{
 			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,440);
 			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
 			
-			Worker wk = new Worker(panel, 50, 40);
+			final Worker wk = new Worker(panel, 50, 40);
 			panel.add(wk);
 			
 			 wk.facneyLarp(new LarpListener(){
 
 					@Override
 					public void reachedLocation() {
-						System.out.println("Larp Finished");
+						wk.facneyLarp( new LarpListener(){
+
+							@Override
+							public void reachedLocation() {
+								wk.facneyLarp( new LarpListener(){
+
+									@Override
+									public void reachedLocation() {
+										wk.facneyLarp( new LarpListener(){
+
+											@Override
+											public void reachedLocation() {
+												wk.facneyLarp( new LarpListener(){
+
+													@Override
+													public void reachedLocation() {
+														// TODO Auto-generated method stub
+														
+													}}, tasks);
+												
+											}}, hammer);
+										
+									}}, wood);
+								
+							}}, anvil1);
 						
 					}}, press);
 			
@@ -206,6 +238,8 @@ public class MainFrame extends JFrame{
 			panel.add(pliers);
 			panel.add(scissors);
 			
+			panel.add(tasks);
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -229,11 +263,55 @@ public class MainFrame extends JFrame{
 		for(String i: files)
 		{
 			if(i.contains(".rpc"))
-				rpcFiles.add(new File(in.getAbsolutePath() + i));
+				rpcFiles.add(new File(in.getAbsolutePath() + "\\" + i));
 			else if(i.contains(".factory"))
-				rpcFiles.add(new File(in.getAbsolutePath() + i));
+				factoryFiles.add(new File(in.getAbsolutePath() + "\\" + i));
 		}
 		
+		File factory = factoryFiles.get(0);
+		Scanner sc = new Scanner(factory);
+		
+		while(sc.hasNext())
+		{
+			String line = sc.nextLine(),
+					item, amount;
+			int collenInt = line.indexOf(":");
+			int endInt = line.lastIndexOf("]");
+			if(collenInt == -1) continue;
+			
+			item = line.substring(1 , collenInt);
+			amount = line.substring(collenInt + 1, endInt);
+			int number = Integer.parseInt(amount);
+			
+			System.out.println(item + " " + amount);
+			
+			if(item.equalsIgnoreCase("Workers"))
+			{
+				workers = number;
+			}
+			else if(item.equalsIgnoreCase("Hammers"))
+			{
+				toolshead.num_hammert = number;
+			}
+			else if(item.equalsIgnoreCase("Screwdrivers"))
+			{
+				toolshead.num_screwt = number;
+			}
+			else if(item.equalsIgnoreCase("Pliers"))
+			{
+				toolshead.num_plierst = number;
+			}
+			else if(item.equalsIgnoreCase("Scissors"))
+			{
+				toolshead.num_scissorst = number;
+			}
+			else if(item.equalsIgnoreCase("Paintbrushes"))
+			{
+				toolshead.num_pbt = number;
+			}
+		}
+		
+		toolshead.init();
 	}
 
 
