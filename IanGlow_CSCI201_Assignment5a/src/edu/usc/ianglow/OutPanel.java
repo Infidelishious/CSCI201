@@ -14,8 +14,10 @@ public class OutPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final Font FONT = new Font("SansSerif", Font.PLAIN, 18);
 	private ArrayList<Square> squares;
+	public MainFrame frame;
 	
-	public OutPanel(){
+	public OutPanel(MainFrame parent){
+		this.frame = parent;
 		setLayout(null);
 //		this.squares = squares;
 	}

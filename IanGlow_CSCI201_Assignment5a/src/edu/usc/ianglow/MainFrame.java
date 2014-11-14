@@ -43,10 +43,10 @@ public class MainFrame extends JFrame{
 	ArrayList<File> factoryFiles;
 	OutPanel panel;
 	
-	public JTable table;
 	public JMenuItem openButton;
 	public MainFrame thiss;
 	public Thread painter;
+	TaskBoard board;
 	
 	Square wood, metal, plastic, tasks;
 	
@@ -55,16 +55,19 @@ public class MainFrame extends JFrame{
 	Worktable anvil1, anvil2, wb1, wb2, wb3, furn1, furn2, ts1, ts2, ts3, ps1, ps2, ps3, ps4, press;
 	
 	ToolShead toolshead;
+	ResourcePile resPile;
 	
 	int workers;
 	
 	public MainFrame()
 	{
 		super("Factory");
+		RecipeManager.getInstance().init(this);
 		rpcFiles = new ArrayList<File>();
 		factoryFiles = new ArrayList<File>();
 		tabels = new ArrayList<Worktable>();
 		toolshead = new ToolShead(this);
+		resPile = new ResourcePile(this);
 		
 		 try {
 			UIManager.setLookAndFeel(
@@ -106,7 +109,7 @@ public class MainFrame extends JFrame{
 		
 		makeTable(true);
 		
-		panel = new OutPanel();
+		panel = new OutPanel(this);
 		makeSquares();
 		add(panel, BorderLayout.CENTER);
 		repaint();
@@ -161,85 +164,42 @@ public class MainFrame extends JFrame{
 			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,440);
 			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
 			
-			final Worker wk = new Worker(panel, 50, 40);
-			panel.add(wk);
+//			final Worker wk = new Worker(panel, 50, 40);
+//			panel.add(wk);
 			
-			 wk.facneyLarp(new LarpListener(){
-
-					@Override
-					public void reachedLocation() {
-						wk.facneyLarp( new LarpListener(){
-
-							@Override
-							public void reachedLocation() {
-								wk.facneyLarp( new LarpListener(){
-
-									@Override
-									public void reachedLocation() {
-										wk.facneyLarp( new LarpListener(){
-
-											@Override
-											public void reachedLocation() {
-												wk.facneyLarp( new LarpListener(){
-
-													@Override
-													public void reachedLocation() {
-														// TODO Auto-generated method stub
-														
-													}}, tasks);
-												
-											}}, hammer);
-										
-									}}, wood);
-								
-							}}, anvil1);
-						
-					}}, press);
+//			 wk.facneyLarp(new LarpListener(){
+//
+//					@Override
+//					public void reachedLocation() {
+//						wk.facneyLarp( new LarpListener(){
+//
+//							@Override
+//							public void reachedLocation() {
+//								wk.facneyLarp( new LarpListener(){
+//
+//									@Override
+//									public void reachedLocation() {
+//										wk.facneyLarp( new LarpListener(){
+//
+//											@Override
+//											public void reachedLocation() {
+//												wk.facneyLarp( new LarpListener(){
+//
+//													@Override
+//													public void reachedLocation() {
+//														// TODO Auto-generated method stub
+//														
+//													}}, tasks);
+//												
+//											}}, hammer);
+//										
+//									}}, wood);
+//								
+//							}}, anvil1);
+//						
+//					}}, press);
 			
-			tabels.add(anvil1);
-			tabels.add(anvil2);
-			tabels.add(wb1);
-			tabels.add(wb2);
-			tabels.add(wb3);
-			tabels.add(furn1);
-			tabels.add(furn2);
-			tabels.add(ts1);
-			tabels.add(ts2);
-			tabels.add(ts3);
-			tabels.add(ps1);
-			tabels.add(ps2);
-			tabels.add(ps3);
-			tabels.add(ps4);
-			tabels.add(press);
-			
-			panel.add(anvil1);
-			panel.add(anvil2);
-			panel.add(wb1);
-			panel.add(wb2);
-			panel.add(wb3);
-			panel.add(furn1);
-			panel.add(furn2);
-			panel.add(ts1);
-			panel.add(ts2);
-			panel.add(ts3);
-			panel.add(ps1);
-			panel.add(ps2);
-			panel.add(ps3);
-			panel.add(ps4);
-			panel.add(press);
-			
-			panel.add(wood);
-			panel.add(metal);
-			panel.add(plastic);
-			
-			panel.add(screwdriver);
-			panel.add(hammer);
-			panel.add(paintbrush);
-			panel.add(pliers);
-			panel.add(scissors);
-			
-			panel.add(tasks);
-			
+			addRest();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -247,9 +207,55 @@ public class MainFrame extends JFrame{
 		}
 	}
 
+	private void addRest() {
+		tabels.add(anvil1);
+		tabels.add(anvil2);
+		tabels.add(wb1);
+		tabels.add(wb2);
+		tabels.add(wb3);
+		tabels.add(furn1);
+		tabels.add(furn2);
+		tabels.add(ts1);
+		tabels.add(ts2);
+		tabels.add(ts3);
+		tabels.add(ps1);
+		tabels.add(ps2);
+		tabels.add(ps3);
+		tabels.add(ps4);
+		tabels.add(press);
+		
+		panel.add(anvil1);
+		panel.add(anvil2);
+		panel.add(wb1);
+		panel.add(wb2);
+		panel.add(wb3);
+		panel.add(furn1);
+		panel.add(furn2);
+		panel.add(ts1);
+		panel.add(ts2);
+		panel.add(ts3);
+		panel.add(ps1);
+		panel.add(ps2);
+		panel.add(ps3);
+		panel.add(ps4);
+		panel.add(press);
+		
+		panel.add(wood);
+		panel.add(metal);
+		panel.add(plastic);
+		
+		panel.add(screwdriver);
+		panel.add(hammer);
+		panel.add(paintbrush);
+		panel.add(pliers);
+		panel.add(scissors);
+		
+		panel.add(tasks);
+	}
+
 	public void makeTable(boolean first) {
 		
-		TaskBoard board = new TaskBoard();
+		board = new TaskBoard();
 //		if(!first)
 //			remove(table);
 		
@@ -262,7 +268,7 @@ public class MainFrame extends JFrame{
 		String[] files = in.list();
 		for(String i: files)
 		{
-			if(i.contains(".rpc"))
+			if(i.contains(".rcp"))
 				rpcFiles.add(new File(in.getAbsolutePath() + "\\" + i));
 			else if(i.contains(".factory"))
 				factoryFiles.add(new File(in.getAbsolutePath() + "\\" + i));
@@ -312,6 +318,81 @@ public class MainFrame extends JFrame{
 		}
 		
 		toolshead.init();
+		resPile.init();
+		
+		for(File i : rpcFiles)
+		{
+			sc = new Scanner(i);
+			Recipe rpc = new Recipe();
+			int numberOfRpcs = 0;
+			
+			while(sc.hasNext())
+			{
+				String line = sc.nextLine(),
+						item, amount;
+				int collenInt = line.indexOf(":");
+				int endInt = line.lastIndexOf("]");
+				int firstXInt = line.lastIndexOf("x");
+				int number = 0;
+				
+				
+				if(collenInt != -1)
+				{
+					item = line.substring(1 , collenInt);
+					amount = line.substring(collenInt + 1, endInt);
+					number = Integer.parseInt(amount);
+				}
+				else
+					item = line.substring(1 , endInt);
+				
+				if(firstXInt > endInt) //FirstItem;
+				{
+					rpc.name = item;
+					amount = line.substring(firstXInt + 1, line.length());
+					amount = amount.trim();
+					number = Integer.parseInt(amount);
+					numberOfRpcs = number;
+					continue;
+				}
+				
+				if(collenInt != -1) //Materials Line
+				{
+					if(item.equalsIgnoreCase("Wood"))
+					{
+						rpc.wood = number;
+					}
+					else if(item.equalsIgnoreCase("Metal"))
+					{
+						rpc.metal = number;
+					}
+					else if(item.equalsIgnoreCase("Plastic"))
+					{
+						rpc.plastic = number;
+					}
+					continue;
+				}
+				
+				
+			}
+			
+			for(int ii = 0; ii < numberOfRpcs; ii++)
+			{
+				RecipeManager.getInstance().addRecipe(new Recipe(rpc));
+			}
+			
+			RecipeManager.getInstance().update();
+		}
+		
+		panel.removeAll();
+		
+		for(int ii = 0; ii < workers; ii++)
+		{
+			Worker wk = new Worker(panel, 50, 40);
+			panel.add(wk);
+		}
+		
+		addRest();
+		
 	}
 
 

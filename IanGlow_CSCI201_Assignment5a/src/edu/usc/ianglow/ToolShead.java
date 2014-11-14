@@ -41,6 +41,8 @@ public class ToolShead {
 		frame.paintbrush.label = "" + num_pb + "/" + num_pbt;
 		frame.pliers.label = "" + num_pliers + "/" + num_plierst;
 		frame.scissors.label = "" + num_scissors + "/" + num_scissorst;
+		
+		frame.repaint();
 	}
 	
 	public void getTools(Worker w, LarpListener l, Action a){
@@ -53,7 +55,6 @@ public class ToolShead {
 					try {
 						waitLock.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -77,7 +78,6 @@ public class ToolShead {
 						num_pb++;
 				}
 			}
-			
 		}
 	}
 	

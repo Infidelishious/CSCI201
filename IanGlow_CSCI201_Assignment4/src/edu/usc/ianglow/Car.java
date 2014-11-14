@@ -33,16 +33,15 @@ public abstract class Car implements Runnable{
 				synchronized (this) {
 					float sec = (1.0f/speed);
 					sec *= 1000;
-					sec /= 3;
+					sec /= 6;
 					this.wait((long)sec);
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			blinks++;
-			blinks %= 3;
+			blinks %= 6;
 			
 			blink();
 			

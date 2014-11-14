@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import edu.usc.ianglow.Recipe.Action;
+
 public class Worker extends JPanel{
 	
 	private static int HIGH_Y = 140,
@@ -23,7 +25,11 @@ public class Worker extends JPanel{
 	boolean moving;
 	int x = 0,
 		y = 0;
-	int num_screw = 0, num_hammer = 0, num_pb = 0, num_pliers = 0, num_scissors = 0;
+	int num_screw = 0, num_hammer = 0, num_pb = 0, num_pliers = 0, num_scissors = 0, num_wood = 0, num_metal = 0, num_plastic = 0;
+	
+	Recipe cRcp;
+	Action cAct;
+//	Thread th;
 
 	public Worker(OutPanel panel)
 	{
@@ -38,8 +44,6 @@ public class Worker extends JPanel{
 			e.printStackTrace();
 		};
 		moving = false;
-//		this.setComponentZOrder(panel, 0);
-//		panel.setComponentZOrder(this, 0);
 	}
 
 	public Worker(OutPanel panel, int x, int y)
@@ -49,8 +53,79 @@ public class Worker extends JPanel{
 		this.y = y;
 		this.setBounds(x, y, getWidth(), getHeight());
 		panel.revalidate();
+//		th = new Thread(this);
+//		th.start();
+		think();
 	}
 	
+	private void think() {
+		if(cRcp == null)
+		{
+			facneyLarp(new LarpListener(){
+
+				@Override
+				public void reachedLocation() {
+					cRcp = RecipeManager.getInstance().getRecipe();
+					think();
+				}}, panel.frame.tasks);
+			return;
+		}
+		
+		if(cRcp.wood > num_wood)
+		{
+			facneyLarp(new LarpListener(){
+
+				@Override
+				public void reachedLocation() {
+					panel.frame.resPile.getRes(ResourcePile.WOOD);
+					num_wood++;
+					think();
+				}}, panel.frame.wood);
+			return;
+		}
+		else if(cRcp.metal > num_metal)
+		{
+			facneyLarp(new LarpListener(){
+
+				@Override
+				public void reachedLocation() {
+					panel.frame.resPile.getRes(ResourcePile.METAL);
+					num_metal++;
+					think();
+				}}, panel.frame.metal);
+			return;
+		}
+		else if(cRcp.plastic > num_plastic)
+		{
+			facneyLarp(new LarpListener(){
+
+				@Override
+				public void reachedLocation() {
+					panel.frame.resPile.getRes(ResourcePile.PLASTIC);
+					num_plastic++;
+					think();
+				}}, panel.frame.plastic);
+			return;
+		}
+		
+		if(cRcp.actions.isEmpty())
+		{
+			facneyLarp(new LarpListener(){
+
+				@Override
+				public void reachedLocation() {
+					RecipeManager.getInstance().returnRecipe(cRcp);
+					cRcp = null;
+					num_wood = 0;
+					num_metal = 0;
+					num_plastic = 0;
+					think();
+				}}, panel.frame.tasks);
+			return;
+		}
+		
+	}
+
 	public void move(int x, int y)
 	{
 		this.x = x;
@@ -62,7 +137,7 @@ public class Worker extends JPanel{
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-
+		
 		g.drawImage(img, 20,20, 40, 40, null);
 	}
 	
@@ -157,19 +232,21 @@ public class Worker extends JPanel{
 		else
 		{
 			larps.add(new Node(x,y - 60));
+			pY = y - 60;
 		}
 		
 		if(workTarget)
 		{
-			pY = y - 60;
-			larps.add(new Node(x, pY));
+//			System.out.println("WorkTG");
+			
+//			larps.add(new Node(pX, pY));
 			
 			
 			if(tY == y) // Go to if on same level
 			{
 				
 				larps.add(new Node(tX, pY));
-				larps.add(new Node(tY, tY));
+				larps.add(new Node(tX, tY));
 			}
 			else
 			{
@@ -192,7 +269,7 @@ public class Worker extends JPanel{
 		else
 		{
 			int ppx;
-			pY = y - 60;
+//			pY = y;
 			
 			if(Math.abs(pX - LEFT_X) > Math.abs(pX - RIGHT_X))
 			{
@@ -303,6 +380,7 @@ public class Worker extends JPanel{
 		int x;
 		int y;
 	}
+
 
 	
 	
