@@ -31,6 +31,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import edu.usc.ianglow.Recipe.Action;
+
 public class MainFrame extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
@@ -372,6 +374,67 @@ public class MainFrame extends JFrame{
 					continue;
 				}
 				
+				//Must be action
+				Action act = rpc.new Action();
+				int forInt = line.lastIndexOf("for");
+				int lastSInt = line.lastIndexOf("s");
+				
+				amount = line.substring(forInt + 4, lastSInt);
+				amount = amount.trim();
+				number = Integer.parseInt(amount);
+				
+				act.time = number;
+				
+				line = line.substring(forInt);
+				
+				if(line.contains("Anvil"))
+					act.location = Worktable.ANVIL;
+				else if(line.contains("Workbench"))
+					act.location = Worktable.BENCH;
+				else if(line.contains("Saw"))
+					act.location = Worktable.SAW;
+				else if(line.contains("Press"))
+					act.location = Worktable.PRESS;
+				else if(line.contains("Painting Station") || line.contains("Paintingstation"))
+					act.location = Worktable.PAINTING;
+				else if(line.contains("Furnace"))
+					act.location = Worktable.FURNACE;
+				
+				while(line.contains("x"))
+				{
+					int type = 0;
+					
+					int firstX = line.indexOf("x");
+					String sub = line.substring(firstX);
+					int lastSpace = sub.lastIndexOf(" ");
+					amount = line.substring(lastSpace + 1, firstX);
+					amount = amount.trim();
+					number = Integer.parseInt(amount);
+					
+					sub = line.substring(firstX + 2, line.length());
+					int firstSpace = sub.indexOf(" ");
+					sub = sub.substring(firstX + 2, firstSpace);
+					
+					if(sub.contains("Screwdriver"))
+						type = ToolShead.SCREWDRIVER;
+					else if(sub.contains("Hammer"))
+						type = ToolShead.HAMMER;
+					else if(sub.contains("Paintbrush"))
+						type = ToolShead.PAINTBRUSH;
+					else if(sub.contains("Pliers"))
+						type = ToolShead.PLIERS;
+					else if(sub.contains("Scissors"))
+						type = ToolShead.SCISSORS;
+					
+					line = line.substring(firstSpace, line.length());
+					
+					for(int ii = 0; ii < number; ii++)
+					{
+						act.tools.add(type);
+					}
+				}
+				
+				rpc.actions.add(act);
 				
 			}
 			
