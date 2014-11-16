@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.TextArea;
-import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -37,7 +37,7 @@ public class TaskBoard extends JPanel{
 		add(out, BorderLayout.CENTER);
 	}
 	
-	public void build(ArrayList<String> a)
+	public void build(Vector<String> a)
 	{
 		String text = "";
 		for(String i: a)

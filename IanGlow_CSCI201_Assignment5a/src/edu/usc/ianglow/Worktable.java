@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.imageio.ImageIO;
 
@@ -19,13 +20,14 @@ public class Worktable extends Square {
 			PAINTING = 4,
 			PRESS = 5;
 	
-	boolean open;
-	float time = 10;
+	AtomicBoolean open;
+	float time = 0;
 	int type;
+	int bllop = 0;
 	
 	public Worktable(OutPanel panel, int type, int x, int y) {
 		super(panel, "", "", null, x, y);
-		open = true;
+		open = new AtomicBoolean(true);
 		this.type = type;
 		try {
 			if(type == ANVIL)
@@ -47,7 +49,61 @@ public class Worktable extends Square {
 		
 	}
 
+	public synchronized void work(Worker w, final int length)
+	{
+		w.blockingLarp(this);
+		System.out.println("Begin: " + w.hashCode() + " work " + this.hashCode());
+		bllop = 0;
+		
+		final Worktable thiss = this;
+		
+		Thread th = new Thread(new Runnable(){
 
+			@Override
+			public void run() {
+				time = length;
+				repaint();
+				while(time > 0)
+				{
+					synchronized(this)
+					{
+						try {
+							wait(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					time--;
+					repaint();
+				}
+				
+				synchronized(thiss)
+				{
+					bllop = 1;
+					thiss.notify();
+				}
+				
+			}});
+		
+		th.start();
+		
+		synchronized(this)
+		{
+			if(bllop == 0)
+			{
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+//		System.out.println("Finished: " + w.hashCode() + " work " + this.hashCode());
+		open.set(true); //dis might not work
+		return;
+	}
+	
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
@@ -61,7 +117,7 @@ public class Worktable extends Square {
 		g.setFont(FONT);
 		g.drawString(label, -width/2 + 40, 45);
 
-		if(open)
+		if(open.get() || time == 0)
 		{
 			g.setColor(DARK_GREEN);
 			width2 = g.getFontMetrics().stringWidth("Open");

@@ -1,6 +1,6 @@
 package edu.usc.ianglow;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import edu.usc.ianglow.Recipe.Action;
 
@@ -46,12 +46,15 @@ public class ToolShead {
 	}
 	
 	public void getTools(Worker w, LarpListener l, Action a){
+//		System.out.println("Get tools, outside of lock1");
 		synchronized(outputLock){
-			
+//			System.out.println("Get tools, outside of lock2");
 			while(!enoughTools(a.tools))
 			{
+//				System.out.println("!Enough tools");
 				synchronized(waitLock)
 				{
+//					System.out.println("waiting");
 					try {
 						waitLock.wait();
 					} catch (InterruptedException e) {
@@ -60,39 +63,47 @@ public class ToolShead {
 				}
 			}
 			
-			w.getTools();
-				
-			synchronized(inputLock)//before actual take
-			{
-				for(Integer i : a.tools)
-				{
-					if(i == SCREWDRIVER)
-						num_screw++;
-					else if(i == HAMMER)
-						 num_hammer++;
-					else if(i == PLIERS)
-						num_pliers++;
-					else if(i == SCISSORS)
-						num_scissors++;
-					else
-						num_pb++;
-				}
-			}
+			w.getTools(); //Does not returen untill done
 		}
+		l.reachedLocation();
+	}
+	
+	public void takeTool(int i)
+	{
+		synchronized(inputLock)//before actual take
+		{
+			if(i == SCREWDRIVER)
+				num_screw--;
+			else if(i == HAMMER)
+				 num_hammer--;
+			else if(i == PLIERS)
+				num_pliers--;
+			else if(i == SCISSORS)
+				num_scissors--;
+			else
+				num_pb--;
+		}
+		
+		update();
 	}
 	
 	public void returnTool(final Worker w, final LarpListener l, final int tool){
+		System.out.println("returnTool");
+		
 		w.facneyLarp(new LarpListener(){
 			@Override
 			public void reachedLocation() {
+				System.out.println("Before Lock1");
 				synchronized(inputLock)
 				{
 					addTool(tool);
 					w.removeTool(tool);
 					l.reachedLocation();
+					System.out.println("Before Lock2");
 					
 					synchronized(waitLock)
 					{
+						System.out.println("Tool Returned");
 						waitLock.notifyAll();
 					}
 				}
@@ -126,6 +137,7 @@ public class ToolShead {
 			num_scissors++;
 		else
 			num_pb++;
+		update();
 	}
 	
 	public void removeTool(int tool)
@@ -142,7 +154,7 @@ public class ToolShead {
 			num_pb--;
 	}
 	
-	public boolean enoughTools(ArrayList<Integer> tools)
+	public boolean enoughTools(Vector<Integer> tools)
 	{
 		int num_screw = 0, num_hammer = 0, num_pb = 0, num_pliers = 0, num_scissors = 0;
 		

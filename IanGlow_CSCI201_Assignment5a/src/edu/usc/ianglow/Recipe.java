@@ -1,6 +1,6 @@
 package edu.usc.ianglow;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class Recipe {
 	
@@ -11,10 +11,10 @@ public class Recipe {
 	String name;
 	int statis = NOT_STARTED;
 	int wood = 0, metal = 0, plastic = 0;
-	ArrayList<Action> actions;
+	Vector<Action> actions;
 	
 	public Recipe() {
-		actions = new ArrayList<Action>();
+		actions = new Vector<Action>();
 	}
 	
 	public Recipe(Recipe a) {
@@ -34,8 +34,11 @@ public class Recipe {
 	
 	public class Action{
 		
+		Vector<Integer> tools;
+		int time, location;
+		
 		public Action() {
-			tools = new ArrayList<Integer>();
+			tools = new Vector<Integer>();
 		}
 		
 		public Action(Action i) {
@@ -48,9 +51,6 @@ public class Recipe {
 				tools.add(Integer.valueOf(j));
 			}
 		}
-		
-		ArrayList<Integer> tools;
-		int time, location;
 	}
 	
 	public String toString(){

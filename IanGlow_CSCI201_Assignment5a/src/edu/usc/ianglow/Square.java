@@ -54,7 +54,8 @@ public class Square extends JPanel {
 	{
 		super.paintComponent(g);
 
-		g.drawImage(img, 20,20, 40, 40, null);
+		if(img != null)
+			g.drawImage(img, 20,20, 40, 40, null);
 
 		int width = g.getFontMetrics().stringWidth(label);
 		int width2 = g.getFontMetrics().stringWidth(top);

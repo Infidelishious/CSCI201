@@ -2,34 +2,21 @@ package edu.usc.ianglow;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JTable;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import edu.usc.ianglow.Recipe.Action;
 
@@ -39,10 +26,10 @@ public class MainFrame extends JFrame{
 	
 	public static Color SWING_GRAY = UIManager.getColor ("Panel.background");
 
-	ArrayList<String[]> data;
-	ArrayList<Worktable> tabels;
-	ArrayList<File> rpcFiles;
-	ArrayList<File> factoryFiles;
+	Vector<String[]> data;
+	Vector<Worktable> tabels;
+	Vector<File> rpcFiles;
+	Vector<File> factoryFiles;
 	OutPanel panel;
 	
 	public JMenuItem openButton;
@@ -50,7 +37,7 @@ public class MainFrame extends JFrame{
 	public Thread painter;
 	TaskBoard board;
 	
-	Square wood, metal, plastic, tasks;
+	Square wood, metal, plastic, tasks, waitingArea;
 	
 	Square screwdriver, hammer, paintbrush, pliers, scissors;
 	
@@ -61,13 +48,17 @@ public class MainFrame extends JFrame{
 	
 	int workers;
 	
+	long start, end;
+
+	private boolean fin = false;
+	
 	public MainFrame()
 	{
 		super("Factory");
 		RecipeManager.getInstance().init(this);
-		rpcFiles = new ArrayList<File>();
-		factoryFiles = new ArrayList<File>();
-		tabels = new ArrayList<Worktable>();
+		rpcFiles = new Vector<File>();
+		factoryFiles = new Vector<File>();
+		tabels = new Vector<Worktable>();
 		toolshead = new ToolShead(this);
 		resPile = new ResourcePile(this);
 		
@@ -124,10 +115,9 @@ public class MainFrame extends JFrame{
 					try {
 						wait(20);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					panel.repaint();
+//					panel.repaint(); //Might Be unessisarry
 				}
 			}});
 		painter.start();
@@ -150,6 +140,8 @@ public class MainFrame extends JFrame{
 			
 			tasks = new Square(panel,"", "", ImageIO.read(new File("img/tasks.png")), 570, 20);
 			
+			waitingArea = new Square(panel,"", "", null, 100, 70);
+			
 			anvil1 = new Worktable(panel, Worktable.ANVIL, 170, 200);
 			anvil2 = new Worktable(panel, Worktable.ANVIL, 240, 200);
 			wb1 = new Worktable(panel, Worktable.BENCH, 310, 200);
@@ -166,41 +158,7 @@ public class MainFrame extends JFrame{
 			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,440);
 			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
 			
-//			final Worker wk = new Worker(panel, 50, 40);
-//			panel.add(wk);
-			
-//			 wk.facneyLarp(new LarpListener(){
-//
-//					@Override
-//					public void reachedLocation() {
-//						wk.facneyLarp( new LarpListener(){
-//
-//							@Override
-//							public void reachedLocation() {
-//								wk.facneyLarp( new LarpListener(){
-//
-//									@Override
-//									public void reachedLocation() {
-//										wk.facneyLarp( new LarpListener(){
-//
-//											@Override
-//											public void reachedLocation() {
-//												wk.facneyLarp( new LarpListener(){
-//
-//													@Override
-//													public void reachedLocation() {
-//														// TODO Auto-generated method stub
-//														
-//													}}, tasks);
-//												
-//											}}, hammer);
-//										
-//									}}, wood);
-//								
-//							}}, anvil1);
-//						
-//					}}, press);
-			
+			addTablesToManager();
 			addRest();
 			
 		} catch (IOException e) {
@@ -210,21 +168,7 @@ public class MainFrame extends JFrame{
 	}
 
 	private void addRest() {
-		tabels.add(anvil1);
-		tabels.add(anvil2);
-		tabels.add(wb1);
-		tabels.add(wb2);
-		tabels.add(wb3);
-		tabels.add(furn1);
-		tabels.add(furn2);
-		tabels.add(ts1);
-		tabels.add(ts2);
-		tabels.add(ts3);
-		tabels.add(ps1);
-		tabels.add(ps2);
-		tabels.add(ps3);
-		tabels.add(ps4);
-		tabels.add(press);
+		panel.add(waitingArea);
 		
 		panel.add(anvil1);
 		panel.add(anvil2);
@@ -254,6 +198,27 @@ public class MainFrame extends JFrame{
 		
 		panel.add(tasks);
 	}
+	
+	public void addTablesToManager()
+	{
+		tabels.add(anvil1);
+		tabels.add(anvil2);
+		tabels.add(wb1);
+		tabels.add(wb2);
+		tabels.add(wb3);
+		tabels.add(furn1);
+		tabels.add(furn2);
+		tabels.add(ts1);
+		tabels.add(ts2);
+		tabels.add(ts3);
+		tabels.add(ps1);
+		tabels.add(ps2);
+		tabels.add(ps3);
+		tabels.add(ps4);
+		tabels.add(press);
+		
+		WorkManager.getInstance().tables = this.tabels;
+	}
 
 	public void makeTable(boolean first) {
 		
@@ -266,7 +231,7 @@ public class MainFrame extends JFrame{
 	}
 
 	
-	protected void parse(File in) throws Exception {
+	protected void parse(File in) throws Exception {	
 		String[] files = in.list();
 		for(String i: files)
 		{
@@ -350,6 +315,7 @@ public class MainFrame extends JFrame{
 				if(firstXInt > endInt) //FirstItem;
 				{
 					rpc.name = item;
+					System.out.println("RCP: " + item);
 					amount = line.substring(firstXInt + 1, line.length());
 					amount = amount.trim();
 					number = Integer.parseInt(amount);
@@ -367,12 +333,13 @@ public class MainFrame extends JFrame{
 					{
 						rpc.metal = number;
 					}
-					else if(item.equalsIgnoreCase("Plastic"))
+					else if(item.equalsIgnoreCase("Plastic")) 
 					{
 						rpc.plastic = number;
 					}
 					continue;
 				}
+				
 				
 				//Must be action
 				Action act = rpc.new Action();
@@ -385,7 +352,7 @@ public class MainFrame extends JFrame{
 				
 				act.time = number;
 				
-				line = line.substring(forInt);
+				line = line.substring(0, forInt + 1);
 				
 				if(line.contains("Anvil"))
 					act.location = Worktable.ANVIL;
@@ -400,12 +367,14 @@ public class MainFrame extends JFrame{
 				else if(line.contains("Furnace"))
 					act.location = Worktable.FURNACE;
 				
+				System.out.println("Station: " + act.location + " for " + act.time + "seconds");
+				
 				while(line.contains("x"))
 				{
 					int type = 0;
 					
 					int firstX = line.indexOf("x");
-					String sub = line.substring(firstX);
+					String sub = line.substring(0, firstX + 1);
 					int lastSpace = sub.lastIndexOf(" ");
 					amount = line.substring(lastSpace + 1, firstX);
 					amount = amount.trim();
@@ -413,7 +382,7 @@ public class MainFrame extends JFrame{
 					
 					sub = line.substring(firstX + 2, line.length());
 					int firstSpace = sub.indexOf(" ");
-					sub = sub.substring(firstX + 2, firstSpace);
+					sub = line.substring(firstX + 2, firstX + 2 + firstSpace);
 					
 					if(sub.contains("Screwdriver"))
 						type = ToolShead.SCREWDRIVER;
@@ -426,11 +395,12 @@ public class MainFrame extends JFrame{
 					else if(sub.contains("Scissors"))
 						type = ToolShead.SCISSORS;
 					
-					line = line.substring(firstSpace, line.length());
+					line = line.substring(firstX + 2 + firstSpace, line.length());
 					
+					System.out.println("Tool, amount: " + type + "," + amount);
 					for(int ii = 0; ii < number; ii++)
 					{
-						act.tools.add(type);
+						act.tools.add(Integer.valueOf(type));
 					}
 				}
 				
@@ -455,7 +425,7 @@ public class MainFrame extends JFrame{
 		}
 		
 		addRest();
-		
+		start = System.currentTimeMillis();
 	}
 
 
@@ -468,5 +438,22 @@ public class MainFrame extends JFrame{
 		mainFrame.setMinimumSize(new Dimension(50*9 + 280,50*9 + 110));
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
+	
+	public synchronized void done()
+	{
+		if(fin) return;
+		fin = true;
+		end = System.currentTimeMillis();
+		JOptionPane.showMessageDialog(
+			    this,
+			    "Simulation took " + (end - start) / 1000 + "s\n",
+			    "Finished", JOptionPane.INFORMATION_MESSAGE);
+		
+
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+
+	
+	}
+	
 
 }

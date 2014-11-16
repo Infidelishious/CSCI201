@@ -1,17 +1,17 @@
 package edu.usc.ianglow;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class RecipeManager {
 	
 	private static RecipeManager instance;
 	
-	ArrayList<Recipe> recipes;
+	Vector<Recipe> recipes;
 
 	private MainFrame frame;
 	
 	protected RecipeManager(){
-		recipes = new ArrayList<Recipe>();
+		recipes = new Vector<Recipe>();
 	}
 
 	public static RecipeManager getInstance() {
@@ -22,17 +22,27 @@ public class RecipeManager {
 	}
 	
 	public synchronized Recipe getRecipe() {
+		System.out.println("Getting recipe");
 		for(Recipe i : recipes)
 		{
 			if(i.statis == Recipe.NOT_STARTED)
 			{
 				i.statis = Recipe.IN_PROGRESS;
 				update();
+				System.out.println("Got recipe");
 				return i;
 			}
 		}
 		
-		System.out.println("Finished");
+		
+		for(Recipe i : recipes)
+		{
+			if(i.statis != Recipe.FINISHED)
+			{
+				return null;
+			}
+		}
+		frame.done();
 		return null;
 	}
 	
@@ -42,6 +52,7 @@ public class RecipeManager {
 	}
 	
 	public synchronized void returnRecipe(Recipe a) {
+		if(a != null) //why?
 		a.statis = Recipe.FINISHED;
 		update();
 	}
@@ -51,7 +62,7 @@ public class RecipeManager {
 	}
 	
 	public void update(){
-		ArrayList<String> toPass = new ArrayList<String>();
+		Vector<String> toPass = new Vector<String>();
 		for(Recipe i : recipes)
 		{
 			toPass.add(i.toString());
