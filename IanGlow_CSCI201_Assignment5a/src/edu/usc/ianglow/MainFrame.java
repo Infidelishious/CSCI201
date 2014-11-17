@@ -138,7 +138,7 @@ public class MainFrame extends JFrame{
 			pliers = new Square(panel,"0", "Pliers", ImageIO.read(new File("img/pliers.png")), 10, 340);
 			scissors = new Square(panel,"0", "Scissors", ImageIO.read(new File("img/scissors.png")), 10, 420);
 			
-			tasks = new Square(panel,"", "", ImageIO.read(new File("img/tasks.png")), 570, 20);
+			tasks = new Square(panel,"", "", null, 580, 20);
 			
 			waitingArea = new Square(panel,"", "", null, 100, 70);
 			
