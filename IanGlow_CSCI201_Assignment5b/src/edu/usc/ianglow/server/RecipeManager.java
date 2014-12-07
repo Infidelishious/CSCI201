@@ -51,12 +51,27 @@ public class RecipeManager {
 		this.frame = f;
 	}
 	
-	public synchronized void returnRecipe(Recipe a) {
-		if(a != null) //why?
-		a.statis = Recipe.FINISHED;
+	public void returnRecipe(Recipe a) {
+		synchronized(this)
+		{
+			if(a == null) return;
+				
+			recipes.remove(a);
+			frame.money += a.cost;
+		
+		}
+		
+		finishedMessage(a);
 		update();
 	}
 	
+	private void finishedMessage(Recipe a) {
+		Message msg = new Message();
+		msg.type = msg.FINISHED;
+		msg.url = "http://barringtonstageco.org/media/potato.jpg";
+		a.st.SendMessage(msg);
+	}
+
 	public void addRecipe(Recipe a){
 		recipes.add(a);
 	}

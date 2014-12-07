@@ -123,6 +123,16 @@ public class ToolShead {
 		return frame.paintbrush;
 	}
 	
+	public void createTool(int tool)
+	{
+		addTool(tool);
+		synchronized(waitLock)
+		{
+			System.out.println("Tool Created");
+			waitLock.notifyAll();
+		}
+	}
+	
 	public void addTool(int tool)
 	{
 		if(tool == SCREWDRIVER)

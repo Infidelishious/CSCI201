@@ -49,5 +49,9 @@ public class OutPanel extends JPanel {
 		g.setFont(FONT);
 		g.drawString("Money", 24, 20);
 	}
+	
+	public void paintComponent3(Graphics g) {
+		super.paintComponent(g);
+	}
 
 }

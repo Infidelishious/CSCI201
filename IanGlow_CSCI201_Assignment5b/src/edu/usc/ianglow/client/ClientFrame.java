@@ -1,7 +1,7 @@
 package edu.usc.ianglow.client;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+//import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
@@ -49,6 +49,7 @@ public class ClientFrame extends JFrame implements ActionListener{
 	public ScrollPane scroll;
 	private Thread painter;
 	final ClientFrame thiss = this;
+	Object drawLock = new Object();
 
 	public ClientFrame()
 	{
@@ -93,10 +94,15 @@ public class ClientFrame extends JFrame implements ActionListener{
 						try {
 							wait(20);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							System.out.println("Painter killed");
+							return;
 						}
-						thiss.repaint(); //Might Be unessisarry
-						thiss.revalidate();
+						
+						synchronized (drawLock)
+						{
+//							thiss.repaint(); //Might Be unessisarry
+							thiss.revalidate();
+						}
 					}
 				}
 			}});
@@ -146,6 +152,7 @@ public class ClientFrame extends JFrame implements ActionListener{
 		
 		getContentPane().repaint();
 		
+		
 		Thread th = new Thread(new Runnable(){
 			@Override
 			public void run() {
@@ -178,15 +185,16 @@ public class ClientFrame extends JFrame implements ActionListener{
 						
 						bot.setLayout(new GridBagLayout());
 						bot.add(button);
-						add(bot, BorderLayout.SOUTH);
+						thiss.add(bot, BorderLayout.SOUTH);
 						return;
 					}
 					else if(msg.type == Message.ACCEPTED)
 					{
-						resp.setText("Request ACCEPTED!");
+						resp.setText("Request accepted!");
 					}
 					else
 					{
+//						painter.interrupt();
 						resp.setText("Order Complete!");
 						JPanel bot = new JPanel();
 						JPanel middle = new JPanel();
@@ -196,11 +204,13 @@ public class ClientFrame extends JFrame implements ActionListener{
 						JLabel leb = new JLabel("");
 						Image image = null;
 						
+						System.out.println("FIDFS");
 						try {
 						    URL url = new URL(msg.url);
 						    image = ImageIO.read(url);
 						    leb.setIcon(new ImageIcon(image));
 						} catch (IOException ee) {
+							ee.printStackTrace();
 						}
 						
 						
@@ -208,7 +218,6 @@ public class ClientFrame extends JFrame implements ActionListener{
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								thiss.dispose();
-								return;
 							}});
 						
 						bot.setLayout(new GridBagLayout());
@@ -217,13 +226,25 @@ public class ClientFrame extends JFrame implements ActionListener{
 						middle.setLayout(new GridBagLayout());
 						middle.add(leb);
 						
-						add(bot, BorderLayout.SOUTH);
-						add(middle, BorderLayout.CENTER);
+						responsePanel = new JPanel();
+						responsePanel.setLayout(new GridBagLayout()); 
+						responsePanel.add(resp);
+						
+						synchronized (drawLock)
+						{
+							thiss.add(bot, BorderLayout.SOUTH);
+							thiss.add(middle, BorderLayout.CENTER);
+							thiss.add(responsePanel, BorderLayout.NORTH);
+						}
+						
+//						thiss.revalidate();
+//						thiss.repaint();
+//						
 						return;
 					}
 				}
 			}});
-		
+//		
 		th.setDaemon(true);
 		th.start();
 

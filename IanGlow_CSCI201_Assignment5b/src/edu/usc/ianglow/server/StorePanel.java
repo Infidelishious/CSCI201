@@ -164,7 +164,7 @@ public class StorePanel extends OutPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.money > 9)
 				{
-					frame.toolshead.num_screw++;
+					frame.toolshead.createTool(ToolShead.SCREWDRIVER);
 					frame.toolshead.num_screwt++;
 					frame.toolshead.update();
 					frame.money -= 10;
@@ -194,7 +194,7 @@ public class StorePanel extends OutPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.money > 11)
 				{
-					frame.toolshead.num_hammer++;
+					frame.toolshead.createTool(ToolShead.HAMMER);
 					frame.toolshead.num_hammert++;
 					frame.toolshead.update();
 					frame.money -= 12;
@@ -224,7 +224,7 @@ public class StorePanel extends OutPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.money > 4)
 				{
-					frame.toolshead.num_pb++;
+					frame.toolshead.createTool(ToolShead.PAINTBRUSH);
 					frame.toolshead.num_pbt++;
 					frame.toolshead.update();
 					frame.money -= 5;
@@ -254,7 +254,7 @@ public class StorePanel extends OutPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.money > 10)
 				{
-					frame.toolshead.num_pliers++;
+					frame.toolshead.createTool(ToolShead.PLIERS);
 					frame.toolshead.num_plierst++;
 					frame.toolshead.update();
 					frame.money -= 11;
@@ -284,9 +284,10 @@ public class StorePanel extends OutPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.money > 8)
 				{
-					frame.toolshead.num_scissors++;
+					frame.toolshead.createTool(ToolShead.SCISSORS);
 					frame.toolshead.num_scissorst++;
 					frame.toolshead.update();
+					
 					frame.money -= 9;
 				}
 			}
@@ -320,6 +321,10 @@ public class StorePanel extends OutPanel{
 					frame.workerArray.add(wk);
 					frame.workers++;
 					frame.money -= 15;
+					
+					frame.panel.removeAll();
+					frame.addWorkers();
+					frame.addRest();
 				}
 			}
 		});

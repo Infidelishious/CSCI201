@@ -20,7 +20,7 @@ class ServerThread extends Thread {
 	private Thread output, input;
 	final ServerThread thiss = this;
 	Object msgLock = new Object();
-	private Recipe recipe;
+	Recipe recipe;
 
 	public ServerThread (Socket initSocket, final ServerLauncher sl)
 	{
@@ -103,6 +103,7 @@ class ServerThread extends Thread {
 						rcp.st = thiss;
 						recipe = rcp;
 						sl.recipes.add(rcp);
+						System.out.println("Got a rcp");
 					}catch (SocketException e) {
 						System.out.println("Socket Closed");
 						timerTask.run();

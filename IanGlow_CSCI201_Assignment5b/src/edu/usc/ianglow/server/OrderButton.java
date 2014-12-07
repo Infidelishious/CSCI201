@@ -15,16 +15,15 @@ public class OrderButton extends Square implements MouseListener{
 
 	public OrderButton(OutPanel panel) throws IOException {
 		
-		super(panel, "", "", ImageIO.read(new File("img/store.png")), 10, 20);
+		super(panel, "", "", ImageIO.read(new File("img/message.png")), 550, 20);
 		this.addMouseListener(this);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 //		System.out.println("Click");
 		panel.frame.remove(panel);
-		panel.frame.add(panel.frame.storePanel, BorderLayout.CENTER);
+		panel.frame.add(panel.frame.orderPanel, BorderLayout.CENTER);
 		panel.frame.revalidate();
 		panel.frame.repaint();
 	}
@@ -49,7 +48,7 @@ public class OrderButton extends Square implements MouseListener{
 		if(img != null)
 			g.drawImage(img, 20,20, 40, 40, null);
 
-		top = "$" + panel.frame.money;
+//		top = "$" + panel.frame.money;
 		int width = g.getFontMetrics().stringWidth(label);
 		int width2 = g.getFontMetrics().stringWidth(top);
 

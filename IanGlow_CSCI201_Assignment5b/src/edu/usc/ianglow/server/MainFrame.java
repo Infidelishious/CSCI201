@@ -58,6 +58,8 @@ public class MainFrame extends JFrame{
 
 	private StoreButton store;
 
+	private OrderButton orders;
+
 	public MainFrame()
 	{
 		super("Factory");
@@ -123,6 +125,7 @@ public class MainFrame extends JFrame{
 		painter.start();
 
 		storePanel = new StorePanel(this);
+		orderPanel = new OrdersPanel(this);
 		
 		File fileToOpen = new File("src/fact.factory");
 		System.out.println("Opened factory: " + fileToOpen.getAbsolutePath());
@@ -168,6 +171,7 @@ public class MainFrame extends JFrame{
 			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
 			
 			store = new StoreButton(panel);
+			orders = new OrderButton(panel);
 
 			addTablesToManager();
 			addRest();
@@ -178,7 +182,7 @@ public class MainFrame extends JFrame{
 		}
 	}
 
-	private void addRest() {
+	public void addRest() {
 		panel.add(waitingArea);
 
 		panel.add(anvil1);
@@ -209,6 +213,7 @@ public class MainFrame extends JFrame{
 
 		panel.add(tasks);
 		panel.add(store);
+		panel.add(orders);
 	}
 
 	public void addTablesToManager()
@@ -530,6 +535,14 @@ public class MainFrame extends JFrame{
 		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 
 
+	}
+
+	public void addWorkers() {
+		for(Worker i: workerArray)
+		{
+			panel.add(i);
+		}
+		
 	}
 
 

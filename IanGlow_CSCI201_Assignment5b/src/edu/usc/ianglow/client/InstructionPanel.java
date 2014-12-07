@@ -74,13 +74,17 @@ public class InstructionPanel extends JPanel {
 		Action act = new Action();
 		
 		try{
-			int time = Integer.parseInt(timenum.getText());
+			act.time = Integer.parseInt(timenum.getText());
 			int location = workbench.getSelectedIndex();
+			
+			
 			int tool1i = tool1.getSelectedIndex() - 1;
 			int tool2i = tool2.getSelectedIndex() - 1;
 			
 			if(location == 0)
 				return null;
+			else
+				act.location = location - 1;
 			
 			if(tool1i > -1)
 			{
