@@ -11,9 +11,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class StoreButton extends Square implements MouseListener{
+public class OrderButton extends Square implements MouseListener{
 
-	public StoreButton(OutPanel panel) throws IOException {
+	public OrderButton(OutPanel panel) throws IOException {
 		
 		super(panel, "", "", ImageIO.read(new File("img/store.png")), 10, 20);
 		this.addMouseListener(this);

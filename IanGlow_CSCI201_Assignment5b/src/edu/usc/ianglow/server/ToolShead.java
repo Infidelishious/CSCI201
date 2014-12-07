@@ -2,8 +2,6 @@ package edu.usc.ianglow.server;
 
 import java.util.Vector;
 
-import edu.usc.ianglow.server.Recipe.Action;
-
 public class ToolShead {
 	
 	public static int SCREWDRIVER = 0,
@@ -184,6 +182,43 @@ public class ToolShead {
 			return false;
 		
 		return true;
+	}
+
+	public boolean deleteTool(int tool) {
+		synchronized(outputLock){
+			if(tool == SCREWDRIVER && 0 < this.num_screw)
+			{
+				num_screw--;
+				num_screwt--;
+				return true;
+			}
+			else if(tool == HAMMER && 0 < this.num_hammer)
+			{
+				 num_hammer--;
+				 num_hammert--;
+				 return true;
+			}
+			else if(tool == PLIERS && 0 < this.num_pliers)
+			{
+				num_pliers--;
+				num_plierst--;
+				return true;
+			}
+			else if(tool == SCISSORS && 0 < this.num_scissors)
+			{
+				num_scissors--;
+				num_scissorst--;
+				return true;
+			}
+			else if(tool == PAINTBRUSH && 0 < this.num_pb)
+			{
+				num_pb--;
+				num_pbt--;
+				return true;
+			}
+			else
+				return false;
+		}
 	}
 	
 

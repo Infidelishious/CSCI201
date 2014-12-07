@@ -11,11 +11,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class StoreButton extends Square implements MouseListener{
+public class BackButton extends Square implements MouseListener{
 
-	public StoreButton(OutPanel panel) throws IOException {
+	public BackButton(OutPanel panel) throws IOException {
 		
-		super(panel, "", "", ImageIO.read(new File("img/store.png")), 10, 20);
+		super(panel, "", "", ImageIO.read(new File("img/back.png")), 10, 20);
 		this.addMouseListener(this);
 		// TODO Auto-generated constructor stub
 	}
@@ -24,7 +24,7 @@ public class StoreButton extends Square implements MouseListener{
 	public void mouseClicked(MouseEvent arg0) {
 //		System.out.println("Click");
 		panel.frame.remove(panel);
-		panel.frame.add(panel.frame.storePanel, BorderLayout.CENTER);
+		panel.frame.add(panel.frame.panel, BorderLayout.CENTER);
 		panel.frame.revalidate();
 		panel.frame.repaint();
 	}

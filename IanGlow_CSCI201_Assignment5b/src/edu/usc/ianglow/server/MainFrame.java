@@ -18,8 +18,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import edu.usc.ianglow.server.Recipe.Action;
-
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -30,7 +28,9 @@ public class MainFrame extends JFrame{
 	Vector<Worktable> tabels;
 	Vector<File> rpcFiles;
 	Vector<File> factoryFiles;
+	Vector<Worker> workerArray;
 	OutPanel panel;
+	OrdersPanel orderPanel;
 
 	public JMenuItem openButton;
 	public MainFrame thiss;
@@ -45,12 +45,18 @@ public class MainFrame extends JFrame{
 
 	ToolShead toolshead;
 	ResourcePile resPile;
+	
+	StorePanel storePanel;
+	
+	ServerLauncher server;
 
 	int workers, money = 0;
 
 	long start, end;
 
 	private boolean fin = false;
+
+	private StoreButton store;
 
 	public MainFrame()
 	{
@@ -61,7 +67,10 @@ public class MainFrame extends JFrame{
 		tabels = new Vector<Worktable>();
 		toolshead = new ToolShead(this);
 		resPile = new ResourcePile(this);
-
+		workerArray = new Vector<Worker>();
+		
+		server = new ServerLauncher(10000);
+		
 		try {
 			UIManager.setLookAndFeel(
 					UIManager.getCrossPlatformLookAndFeelClassName());
@@ -71,24 +80,22 @@ public class MainFrame extends JFrame{
 
 		thiss = this;
 		setLayout(new BorderLayout());
-		openButton = new JMenuItem("Start");
-		openButton.addActionListener(new ActionListener(){
+//		openButton = new JMenuItem("Start");
+//		openButton.addActionListener(new ActionListener(){
+//
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				JFileChooser fileChooser = new JFileChooser();
+//				try {
+//					
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fileChooser = new JFileChooser();
-				try {
-					File fileToOpen = new File("src/fact.factory");
-					System.out.println("Opened factory: " + fileToOpen.getAbsolutePath());
-					factorParse(fileToOpen);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-		add(openButton, BorderLayout.NORTH);
+//		add(openButton, BorderLayout.NORTH);
 
 		makeTable(true);
 
@@ -102,16 +109,28 @@ public class MainFrame extends JFrame{
 			@Override
 			public void run() {
 				synchronized (this) {
-					try {
-						wait(20);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					while(true)
+					{
+						try {
+							wait(20);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						thiss.repaint(); //Might Be unessisarry
 					}
-					//					panel.repaint(); //Might Be unessisarry
 				}
 			}});
 		painter.start();
 
+		storePanel = new StorePanel(this);
+		
+		File fileToOpen = new File("src/fact.factory");
+		System.out.println("Opened factory: " + fileToOpen.getAbsolutePath());
+		try {
+			factorParse(fileToOpen);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -147,6 +166,8 @@ public class MainFrame extends JFrame{
 			ps3 = new Worktable(panel, Worktable.PAINTING, 310 ,440);
 			ps4 = new Worktable(panel, Worktable.PAINTING, 380 ,440);
 			press = new Worktable(panel, Worktable.PRESS, 450 ,440);
+			
+			store = new StoreButton(panel);
 
 			addTablesToManager();
 			addRest();
@@ -187,6 +208,7 @@ public class MainFrame extends JFrame{
 		panel.add(scissors);
 
 		panel.add(tasks);
+		panel.add(store);
 	}
 
 	public void addTablesToManager()
@@ -396,7 +418,7 @@ public class MainFrame extends JFrame{
 
 
 				//Must be action
-				Action act = rpc.new Action();
+				Action act = new Action();
 				int forInt = line.lastIndexOf("for");
 				int lastSInt = line.lastIndexOf("s");
 
@@ -476,6 +498,7 @@ public class MainFrame extends JFrame{
 		{
 			Worker wk = new Worker(panel, 50, 40);
 			panel.add(wk);
+			workerArray.add(wk);
 		}
 
 		addRest();

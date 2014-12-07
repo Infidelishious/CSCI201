@@ -2,8 +2,6 @@ package edu.usc.ianglow.server;
 
 import java.util.ArrayList;
 
-import edu.usc.ianglow.server.Recipe.Action;
-
 public class ResourcePile {
 
 	public static int WOOD = 0,
@@ -89,7 +87,39 @@ public class ResourcePile {
 		update();
 	}
 	
-	public synchronized  void addRes(int res, int amount)
+	public synchronized boolean getResBool(int res)
+	{
+		
+		if(res == WOOD)
+		{
+			if(num_wood <= 0)
+			{
+				return false;
+			}
+			num_wood--;
+		}
+		else if(res == PLASTIC)
+		{
+			if(num_plastic <= 0)
+			{
+				return false;
+			}
+			num_plastic--;
+		}
+		else 
+		{
+			if(num_metal <= 0)
+			{
+				return false;
+			}
+			num_metal--;
+		}
+		
+		update();
+		return true;
+	}
+	
+	public synchronized void addRes(int res, int amount)
 	{
 		if(res == WOOD)
 			num_wood += amount;

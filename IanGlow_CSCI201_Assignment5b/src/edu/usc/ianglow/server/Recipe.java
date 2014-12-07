@@ -1,17 +1,20 @@
 package edu.usc.ianglow.server;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Recipe {
+public class Recipe implements Serializable{
 	
-	static int NOT_STARTED = 0,
+	public static int NOT_STARTED = 0,
 			IN_PROGRESS = 1,
 			FINISHED = 2;
 	
-	String name;
-	int statis = NOT_STARTED;
-	int wood = 0, metal = 0, plastic = 0;
-	Vector<Action> actions;
+	public String name;
+	public int statis = NOT_STARTED;
+	public int wood = 0, metal = 0, plastic = 0;
+	public Vector<Action> actions;
+	public int cost = 0;
+	public ServerThread st;
 	
 	public Recipe() {
 		actions = new Vector<Action>();
@@ -31,27 +34,6 @@ public class Recipe {
 	    }
 	    
 	  }
-	
-	public class Action{
-		
-		Vector<Integer> tools;
-		int time, location;
-		
-		public Action() {
-			tools = new Vector<Integer>();
-		}
-		
-		public Action(Action i) {
-			this();
-			this.time = i.time;
-			this.location = i.location;
-			
-			for(Integer j : i.tools)
-			{
-				tools.add(Integer.valueOf(j));
-			}
-		}
-	}
 	
 	public String toString(){
 		String st = "";

@@ -12,8 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import edu.usc.ianglow.server.Recipe.Action;
-
 public class Worker extends JPanel implements Runnable{
 
 	private static int HIGH_Y = 140,
@@ -26,7 +24,7 @@ public class Worker extends JPanel implements Runnable{
 	Object lock = new Object(),
 			fancylock = new Object();
 		
-	boolean actionCompleted;
+	boolean actionCompleted, fired = false;
 	int x = 0,
 			y = 0;
 	int num_screw = 0, num_hammer = 0, num_pb = 0, num_pliers = 0, num_scissors = 0, num_wood = 0, num_metal = 0, num_plastic = 0;
@@ -82,14 +80,25 @@ public class Worker extends JPanel implements Runnable{
 
 		if(cRcp == null)
 		{
-			facneyLarp(new LarpListener(){
-
-				@Override
-				public void reachedLocation() {
-					cRcp = RecipeManager.getInstance().getRecipe();
-					think2();
-				}}, panel.frame.tasks);
-			return;
+			if(!fired)
+			{
+				facneyLarp(new LarpListener(){
+	
+					@Override
+					public void reachedLocation() {
+						cRcp = RecipeManager.getInstance().getRecipe();
+						think2();
+					}}, panel.frame.tasks);
+				return;
+			}
+			else
+			{
+				panel.remove(this);
+				panel.frame.workerArray.remove(this);
+				panel.frame.workers--;
+				
+				th.interrupt();
+			}
 		}
 
 		if(cRcp.wood > num_wood)
